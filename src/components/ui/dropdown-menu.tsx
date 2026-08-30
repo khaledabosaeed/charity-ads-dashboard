@@ -17,7 +17,7 @@ export function DropdownMenuContent({
       <DropdownMenuPrimitive.Content
         sideOffset={sideOffset}
         className={cn(
-          "z-50 min-w-[10rem] overflow-hidden rounded-md border border-border bg-card p-1 text-card-foreground shadow-md",
+          "z-50 min-w-[10rem] overflow-hidden rounded-[2px] border border-line bg-paper-raised p-1 text-ink shadow-[0_4px_16px_-6px_rgb(0_0_0/0.3)]",
           className
         )}
         {...props}
@@ -33,7 +33,7 @@ export function DropdownMenuItem({
   return (
     <DropdownMenuPrimitive.Item
       className={cn(
-        "flex cursor-pointer select-none items-center rounded-sm px-2 py-1.5 text-sm outline-none data-[highlighted]:bg-muted",
+        "flex cursor-pointer select-none items-center rounded-[2px] px-2 py-1.5 text-sm outline-none data-[highlighted]:bg-amber-veil",
         className
       )}
       {...props}

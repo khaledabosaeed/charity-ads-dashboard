@@ -3,7 +3,6 @@
 import { useActionState, useEffect } from "react";
 import { toast } from "sonner";
 import { useI18n } from "@/i18n";
-import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { FormError, FormItem, FormLabel } from "@/components/forms/field";
@@ -18,8 +17,8 @@ export function PlatformForm() {
   }, [state]);
 
   return (
-    <Card className="max-w-lg">
-      <CardContent className="pt-4">
+    <div className="max-w-2xl border border-line bg-paper-raised">
+      <div className="px-4 py-4 sm:px-5">
         <form action={formAction} className="flex flex-col gap-4 sm:flex-row sm:items-end">
           <FormItem className="flex-1">
             <FormLabel htmlFor="name" required>
@@ -35,11 +34,11 @@ export function PlatformForm() {
             <Input id="slug" name="slug" placeholder="my-platform" required />
             <FormError message={state.fieldErrors?.slug} />
           </FormItem>
-          <Button type="submit" disabled={isPending}>
+          <Button type="submit" disabled={isPending} pending={isPending}>
             {dict.platforms.new}
           </Button>
         </form>
-      </CardContent>
-    </Card>
+      </div>
+    </div>
   );
 }

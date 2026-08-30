@@ -21,7 +21,7 @@ export function AuditLogsTable({ logs }: { logs: AuditLogWithActor[] }) {
     <Table>
       <TableHeader>
         <TableRow>
-          <TableHead>{dict.auditLogs.date}</TableHead>
+          <TableHead pinned>{dict.auditLogs.date}</TableHead>
           <TableHead>{dict.auditLogs.actor}</TableHead>
           <TableHead>{dict.auditLogs.action}</TableHead>
           <TableHead>{dict.auditLogs.table}</TableHead>
@@ -31,15 +31,15 @@ export function AuditLogsTable({ logs }: { logs: AuditLogWithActor[] }) {
       <TableBody>
         {logs.map((log) => (
           <TableRow key={log.id}>
-            <TableCell className="whitespace-nowrap text-xs text-muted-foreground">
+            <TableCell pinned className="whitespace-nowrap figure text-[0.6875rem] text-ink-2">
               {new Date(log.created_at).toLocaleString(locale === "ar" ? "ar-EG" : "en-US")}
             </TableCell>
             <TableCell>{log.actor?.full_name ?? "—"}</TableCell>
             <TableCell>
               <Badge variant={badgeVariant(log.action)}>{log.action}</Badge>
             </TableCell>
-            <TableCell className="font-mono text-xs">{log.table_name}</TableCell>
-            <TableCell className="font-mono text-xs">{log.record_id ?? "—"}</TableCell>
+            <TableCell className="figure text-[0.6875rem] text-ink-2">{log.table_name}</TableCell>
+            <TableCell className="figure text-[0.6875rem] text-ink-2">{log.record_id ?? "—"}</TableCell>
           </TableRow>
         ))}
       </TableBody>

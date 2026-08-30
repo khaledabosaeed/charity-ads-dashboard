@@ -44,7 +44,7 @@ export function AssociationForm({
         <FormError message={state.fieldErrors?.description} />
       </FormItem>
       <FormError message={state.error} />
-      <Button type="submit" disabled={isPending} className="w-fit">
+      <Button type="submit" disabled={isPending} pending={isPending} className="w-fit">
         {isPending ? dict.common.loading : dict.common.save}
       </Button>
     </form>

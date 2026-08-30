@@ -1,11 +1,13 @@
 import * as React from "react";
 import { cn } from "@/lib/utils";
 
+/* Status is stated, not decorated: a squared tag with a hairline, in the
+   drawing's own inks. Never a pill, never a lone colour dot. */
 const variants = {
-  default: "bg-primary/10 text-primary",
-  success: "bg-emerald-100 text-emerald-700 dark:bg-emerald-900/40 dark:text-emerald-300",
-  muted: "bg-muted text-muted-foreground",
-  destructive: "bg-destructive/10 text-destructive",
+  default: "border-amber-deep/50 bg-amber-veil text-amber-ink",
+  success: "border-datum/40 bg-datum-wash text-datum",
+  muted: "border-line-2 bg-paper-sunk text-ink-2",
+  destructive: "border-alarm/40 bg-alarm-wash text-alarm",
 } as const;
 
 export function Badge({
@@ -16,7 +18,7 @@ export function Badge({
   return (
     <span
       className={cn(
-        "inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-medium",
+        "inline-flex items-center rounded-[2px] border px-2 py-0.5 text-[0.6875rem] font-medium leading-tight",
         variants[variant],
         className
       )}

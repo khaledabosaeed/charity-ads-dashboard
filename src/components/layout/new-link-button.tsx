@@ -17,11 +17,12 @@ function resolve(obj: unknown, path: string): string {
 
 export function NewLinkButton({ href, labelKey }: { href: string; labelKey: string }) {
   const { dict } = useI18n();
+  const label = resolve(dict, labelKey);
   return (
     <Button asChild size="sm">
-      <Link href={href}>
-        <Plus className="h-4 w-4" />
-        <span className="hidden sm:inline">{resolve(dict, labelKey)}</span>
+      <Link href={href} aria-label={label}>
+        <Plus className="h-4 w-4" strokeWidth={2} aria-hidden="true" />
+        <span className="hidden sm:inline">{label}</span>
       </Link>
     </Button>
   );

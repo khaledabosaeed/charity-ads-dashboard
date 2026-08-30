@@ -14,11 +14,9 @@ import { useI18n } from "@/i18n";
 import { cn } from "@/lib/utils";
 import type { UserRole } from "@/types/database.types";
 
-export function Sidebar({ role }: { role: UserRole }) {
+export function useNavItems(role: UserRole) {
   const { dict } = useI18n();
-  const pathname = usePathname();
-
-  const items = [
+  return [
     { href: "/dashboard", label: dict.nav.dashboard, icon: LayoutDashboard },
     { href: "/statistics", label: dict.nav.statistics, icon: ListChecks },
     ...(role === "admin"
@@ -30,9 +28,25 @@ export function Sidebar({ role }: { role: UserRole }) {
         ]
       : []),
   ];
+}
+
+/**
+ * Navigation on the amber rail. The selected storey inverts to ink — the block
+ * is the state, so no dot, bar, or chevron is needed to announce it.
+ */
+export function Sidebar({
+  role,
+  onNavigate,
+}: {
+  role: UserRole;
+  onNavigate?: () => void;
+}) {
+  const { dict } = useI18n();
+  const pathname = usePathname();
+  const items = useNavItems(role);
 
   return (
-    <nav className="flex flex-col gap-1 p-3">
+    <nav className="flex flex-col gap-px p-3" aria-label={dict.nav.dashboard}>
       {items.map((item) => {
         const active = pathname === item.href || pathname.startsWith(item.href + "/");
         const Icon = item.icon;
@@ -40,13 +54,18 @@ export function Sidebar({ role }: { role: UserRole }) {
           <Link
             key={item.href}
             href={item.href}
+            onClick={onNavigate}
+            aria-current={active ? "page" : undefined}
             className={cn(
-              "flex items-center gap-3 rounded-md px-3 py-2 text-sm font-medium transition-colors",
-              active ? "bg-primary/10 text-primary" : "text-muted-foreground hover:bg-muted"
+              "flex items-center gap-3 rounded-[2px] px-3 py-2.5 text-[0.8125rem] font-medium",
+              "transition-colors duration-150",
+              active
+                ? "bg-rail-ink text-rail"
+                : "text-rail-ink hover:bg-rail-line"
             )}
           >
-            <Icon className="h-4 w-4" />
-            {item.label}
+            <Icon className="h-4 w-4 shrink-0" strokeWidth={1.75} aria-hidden="true" />
+            <span className="truncate">{item.label}</span>
           </Link>
         );
       })}

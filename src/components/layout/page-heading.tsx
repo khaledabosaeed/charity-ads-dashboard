@@ -1,6 +1,7 @@
 "use client";
 
 import { useI18n } from "@/i18n";
+import { TitleBlock } from "@/components/drawing";
 
 function resolve(obj: unknown, path: string): string {
   const value = path.split(".").reduce<unknown>((acc, key) => {
@@ -12,18 +13,25 @@ function resolve(obj: unknown, path: string): string {
   return typeof value === "string" ? value : path;
 }
 
+/** Every sheet opens with its title block. */
 export function PageHeading({
   titleKey,
+  extent,
+  revision,
   action,
 }: {
   titleKey: string;
+  extent?: React.ReactNode;
+  revision?: React.ReactNode;
   action?: React.ReactNode;
 }) {
   const { dict } = useI18n();
   return (
-    <div className="flex items-center justify-between gap-4">
-      <h1 className="text-xl font-semibold">{resolve(dict, titleKey)}</h1>
-      {action}
-    </div>
+    <TitleBlock
+      title={resolve(dict, titleKey)}
+      extent={extent}
+      revision={revision}
+      action={action}
+    />
   );
 }

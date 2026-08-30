@@ -15,16 +15,16 @@ export function DialogContent({
 }: React.ComponentPropsWithoutRef<typeof DialogPrimitive.Content>) {
   return (
     <DialogPrimitive.Portal>
-      <DialogPrimitive.Overlay className="fixed inset-0 z-50 bg-black/50 data-[state=open]:animate-in data-[state=open]:fade-in" />
+      <DialogPrimitive.Overlay className="ink-in fixed inset-0 z-50 bg-ink/50" />
       <DialogPrimitive.Content
         className={cn(
-          "fixed start-1/2 top-1/2 z-50 w-full max-w-md -translate-x-1/2 -translate-y-1/2 rounded-lg border border-border bg-card p-6 shadow-lg",
+          "fixed start-1/2 top-1/2 z-50 w-full max-w-md -translate-x-1/2 -translate-y-1/2 rounded-[2px] border border-line-2 bg-paper-raised p-6 shadow-[0_8px_30px_-10px_rgb(0_0_0/0.4)]",
           className
         )}
         {...props}
       >
         {children}
-        <DialogPrimitive.Close className="absolute end-4 top-4 rounded-sm opacity-70 hover:opacity-100 focus:outline-none">
+        <DialogPrimitive.Close className="absolute end-4 top-4 rounded-[2px] opacity-70 hover:opacity-100 focus:outline-none">
           <X className="h-4 w-4" />
         </DialogPrimitive.Close>
       </DialogPrimitive.Content>

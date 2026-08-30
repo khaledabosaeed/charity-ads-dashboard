@@ -1,58 +1,437 @@
 @import "tailwindcss";
 
-:root {
-  --background: #f8fafc;
-  --foreground: #0f172a;
-  --card: #ffffff;
-  --card-foreground: #0f172a;
-  --border: #e2e8f0;
-  --muted: #f1f5f9;
-  --muted-foreground: #64748b;
-  --primary: #1d4ed8;
-  --primary-foreground: #ffffff;
-  --destructive: #dc2626;
-  --destructive-foreground: #ffffff;
-  --ring: #93c5fd;
+/*
+  المسقط — The Elevation.
+  A measured architectural drawing: hairlines in three weights, a green datum
+  that is zero everywhere, 45° hatch for consumed quantity, dimension strings
+  carrying tabular figures, and a title block on every sheet.
+  Light = warm drafting paper. Dark = blueprint ink, where the hatch and line
+  work are drawn in amber and the rail deepens to hold its ink legible.
+*/
+
+@custom-variant dark (&:where([data-theme="dark"], [data-theme="dark"] *));
+
+:root,
+[data-theme="light"] {
+  /* sheet */
+  --paper: #f7f3ec;
+  --paper-sunk: #efe8dc;
+  --paper-raised: #fffdf8;
+
+  /* ink */
+  --ink: #16191c;
+  --ink-2: #5b6167;
+  --ink-3: #62686f;
+
+  /* drafting lines — three weights, three values */
+  --line: #ddd4c4;
+  --line-2: #c3b7a2;
+  --line-3: #16191c;
+
+  /* amber: the mass */
+  --amber: #e59731;
+  --amber-deep: #b9722a;
+  --amber-ink: #7a4712;
+  --amber-wash: #f8e6cd;
+  --amber-veil: #fcf2e3;
+
+  /* green: the datum, and return */
+  --datum: #1f7a4d;
+  --datum-2: #3f9d6c;
+  --datum-wash: #dff0e5;
+
+  /* the drawing's red — corrections, overruns, deletions */
+  --alarm: #b3341f;
+  --alarm-wash: #f8e2dd;
+
+  /* the amber rail that owns the navigation region */
+  --rail: #e59731;
+  --rail-ink: #1a1207;
+  --rail-ink-2: #4a3009;
+  --rail-line: #c67f22;
+
+  --hatch: rgb(0 0 0 / 0.16);
+  --sheet-shadow: 0 1px 2px rgb(35 26 12 / 0.05), 0 8px 24px -12px rgb(35 26 12 / 0.18);
+  --ring: #b9722a;
+
+  /* One easing for the whole drawing: a confident arrival, never a bounce. */
+  --ease-draw: cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+[data-theme="dark"] {
+  --paper: #0e1216;
+  --paper-sunk: #0a0d10;
+  --paper-raised: #151a20;
+
+  --ink: #e9e3d7;
+  --ink-2: #9aa2ab;
+  --ink-3: #7d858e;
+
+  --line: #242c34;
+  --line-2: #38424c;
+  --line-3: #e9e3d7;
+
+  --amber: #eda94b;
+  --amber-deep: #f0b769;
+  --amber-ink: #f5cd93;
+  --amber-wash: #2c2113;
+  --amber-veil: #1d1811;
+
+  --datum: #4fb57f;
+  --datum-2: #6ec698;
+  --datum-wash: #10261b;
+
+  --alarm: #e5705a;
+  --alarm-wash: #2e1713;
+
+  --rail: #bd7a24;
+  --rail-ink: #16100a;
+  --rail-ink-2: #2a1c06;
+  --rail-line: #a4691d;
+
+  --hatch: rgb(237 169 75 / 0.34);
+  --sheet-shadow: 0 1px 2px rgb(0 0 0 / 0.4), 0 8px 24px -12px rgb(0 0 0 / 0.6);
+  --ring: #eda94b;
 }
 
 @theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --color-card: var(--card);
-  --color-card-foreground: var(--card-foreground);
-  --color-border: var(--border);
-  --color-muted: var(--muted);
-  --color-muted-foreground: var(--muted-foreground);
-  --color-primary: var(--primary);
-  --color-primary-foreground: var(--primary-foreground);
-  --color-destructive: var(--destructive);
-  --color-destructive-foreground: var(--destructive-foreground);
+  --color-paper: var(--paper);
+  --color-paper-sunk: var(--paper-sunk);
+  --color-paper-raised: var(--paper-raised);
+  --color-ink: var(--ink);
+  --color-ink-2: var(--ink-2);
+  --color-ink-3: var(--ink-3);
+  --color-line: var(--line);
+  --color-line-2: var(--line-2);
+  --color-line-3: var(--line-3);
+  --color-amber: var(--amber);
+  --color-amber-deep: var(--amber-deep);
+  --color-amber-ink: var(--amber-ink);
+  --color-amber-wash: var(--amber-wash);
+  --color-amber-veil: var(--amber-veil);
+  --color-datum: var(--datum);
+  --color-datum-2: var(--datum-2);
+  --color-datum-wash: var(--datum-wash);
+  --color-alarm: var(--alarm);
+  --color-alarm-wash: var(--alarm-wash);
+  --color-rail: var(--rail);
+  --color-rail-ink: var(--rail-ink);
+  --color-rail-ink-2: var(--rail-ink-2);
+  --color-rail-line: var(--rail-line);
   --color-ring: var(--ring);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
+
+  --font-sans: var(--font-alexandria), "Segoe UI", system-ui, sans-serif;
+  --font-figure: var(--font-archivo), ui-sans-serif, system-ui, sans-serif;
+
+  --radius-sheet: 2px;
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0b1220;
-    --foreground: #e2e8f0;
-    --card: #111827;
-    --card-foreground: #e2e8f0;
-    --border: #1f2937;
-    --muted: #1f2937;
-    --muted-foreground: #94a3b8;
-    --primary: #3b82f6;
-    --primary-foreground: #0b1220;
-    --ring: #1d4ed8;
-  }
+html {
+  color-scheme: light;
+  overflow-x: clip;
+}
+[data-theme="dark"] {
+  color-scheme: dark;
 }
 
 body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: var(--font-sans), Arial, Helvetica, sans-serif;
+  background: var(--paper);
+  color: var(--ink);
+  font-family: var(--font-sans);
+  -webkit-font-smoothing: antialiased;
+}
+
+/* ---- browser surfaces: the parts we did not draw still carry the drawing ---- */
+
+::selection {
+  background: var(--amber);
+  color: var(--rail-ink);
+}
+[data-theme="dark"] ::selection {
+  background: var(--amber);
+  color: #16100a;
 }
 
 * {
-  border-color: var(--border);
+  caret-color: var(--amber-deep);
+}
+
+* {
+  scrollbar-width: thin;
+  scrollbar-color: var(--line-2) transparent;
+}
+::-webkit-scrollbar {
+  width: 10px;
+  height: 10px;
+}
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+::-webkit-scrollbar-thumb {
+  background: var(--line-2);
+  border: 3px solid var(--paper);
+  border-radius: 2px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: var(--amber-deep);
+}
+
+:focus-visible {
+  outline: 2px solid var(--ring);
+  outline-offset: 2px;
+}
+
+a {
+  text-underline-offset: 0.22em;
+  text-decoration-thickness: from-font;
+}
+
+/* Figures are measurements: always tabular, always aligned in a column. */
+.figure {
+  font-family: var(--font-figure);
+  font-variant-numeric: tabular-nums lining-nums;
+  font-feature-settings: "tnum" 1, "lnum" 1;
+  letter-spacing: -0.01em;
+  direction: ltr;
+  unicode-bidi: isolate;
+}
+
+/* A drafting annotation. Tracked and uppercased only where the script allows it. */
+.annot {
+  font-size: 0.6875rem;
+  line-height: 1.35;
+  font-weight: 500;
+  color: var(--ink-2);
+}
+[dir="ltr"] .annot {
+  font-family: var(--font-figure);
+  text-transform: uppercase;
+  letter-spacing: 0.14em;
+}
+
+/* 45° hatch — consumed quantity, cut faces, disabled ground. */
+.hatch {
+  background-image: repeating-linear-gradient(
+    45deg,
+    transparent 0 4px,
+    var(--hatch) 4px 5px
+  );
+}
+.hatch-dense {
+  background-image: repeating-linear-gradient(
+    45deg,
+    transparent 0 2px,
+    var(--hatch) 2px 3px
+  );
+}
+
+/* The sheet: a hairline rectangle, never a rounded card with a shadow. */
+.sheet {
+  background: var(--paper-raised);
+  border: 1px solid var(--line);
+  border-radius: var(--radius-sheet);
+}
+
+/* Faint grid of the drafting board, for large empty grounds. */
+.board-grid {
+  background-image: linear-gradient(var(--line) 1px, transparent 1px),
+    linear-gradient(90deg, var(--line) 1px, transparent 1px);
+  background-size: 32px 32px;
+  opacity: 1;
+  background-position: -1px -1px;
+}
+
+/* ── Motion ─────────────────────────────────────────────────────────────────
+   The world's native motion is inking: a line appears along its own length,
+   in the order a drafter works — the datum ruled first, the mass struck from
+   it, the dimension strings set out, the plot traced last.
+
+   Text never animates. Every figure and label is legible at 0ms; only the
+   line work is drawn. Each step reads its own start time from --draw-delay,
+   so the sequence is composed by the components rather than hard-coded here.
+*/
+
+/* 1. A rule is drawn along its length, from the sheet's start edge. */
+@keyframes rule-in {
+  from {
+    transform: scaleX(0);
+  }
+  to {
+    transform: scaleX(1);
+  }
+}
+.rule-in {
+  transform-origin: left center;
+  animation: rule-in 340ms var(--ease-draw) both;
+  animation-delay: var(--draw-delay, 0ms);
+}
+[dir="rtl"] .rule-in {
+  transform-origin: right center;
+}
+
+/* 2. A quantity is struck from the datum outward. clip-path rather than a
+      scale, so the 45° hatch keeps its angle instead of shearing with it. */
+@keyframes strike-from-datum {
+  from {
+    clip-path: inset(0 100% 0 0);
+  }
+  to {
+    clip-path: inset(0 0 0 0);
+  }
+}
+@keyframes strike-from-datum-rtl {
+  from {
+    clip-path: inset(0 0 0 100%);
+  }
+  to {
+    clip-path: inset(0 0 0 0);
+  }
+}
+.strike {
+  animation: strike-from-datum 560ms var(--ease-draw) both;
+  animation-delay: var(--draw-delay, 140ms);
+}
+[dir="rtl"] .strike {
+  animation-name: strike-from-datum-rtl;
+}
+
+/* 3. The plot is traced in time order, which is left-to-right in both scripts:
+      here the drawing follows the data, not the reading direction. */
+@keyframes plot-in {
+  from {
+    clip-path: inset(0 100% 0 0);
+  }
+  to {
+    clip-path: inset(0 0 0 0);
+  }
+}
+.plot-in {
+  animation: plot-in 600ms var(--ease-draw) both;
+  animation-delay: var(--draw-delay, 460ms);
+}
+
+@keyframes ink-in {
+  from {
+    opacity: 0;
+    transform: translateY(4px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+.ink-in {
+  animation: ink-in 400ms var(--ease-draw) both;
+  animation-delay: var(--draw-delay, 0ms);
+}
+
+/* 4. Work in progress is a rule being ruled: a hairline drawn back and forth
+      along the control's own edge, for as long as the work is running. */
+@keyframes pending-rule {
+  from {
+    transform: translateX(-100%);
+  }
+  to {
+    transform: translateX(240%);
+  }
+}
+[data-pending] {
+  position: relative;
+  overflow: hidden;
+}
+[data-pending]::after {
+  content: "";
+  position: absolute;
+  inset-inline: 0;
+  bottom: 0;
+  width: 42%;
+  height: 2px;
+  background: currentColor;
+  opacity: 0.7;
+  animation: pending-rule 1100ms cubic-bezier(0.65, 0, 0.35, 1) infinite;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  /*
+    Fewer and gentler, not silent. The drawing sequence and every spatial
+    movement are dropped so the sheet simply arrives complete, while colour,
+    state and focus feedback survive — including the pending mark, which
+    becomes a ruled bar that is present rather than travelling.
+  */
+  .rule-in,
+  .strike,
+  .plot-in,
+  .ink-in {
+    animation: none;
+  }
+  [data-pending]::after {
+    animation: none;
+    width: 100%;
+    opacity: 0.45;
+  }
+}
+
+/* Recharts: the drawing owns the chart's furniture too. */
+.recharts-cartesian-axis-tick text {
+  fill: var(--ink-3);
+  font-family: var(--font-figure);
+  font-size: 11px;
+}
+.recharts-cartesian-grid line {
+  stroke: var(--line);
+}
+.recharts-surface {
+  overflow: visible;
+}
+
+/* On the amber rail, annotations take the rail's own ink. */
+.rail .annot {
+  color: var(--rail-ink-2);
+}
+
+/* Checkboxes are drawn, not borrowed from the OS. */
+input[type="checkbox"] {
+  appearance: none;
+  -webkit-appearance: none;
+  width: 1rem;
+  height: 1rem;
+  flex: none;
+  border: 1px solid var(--line-2);
+  background: var(--paper);
+  border-radius: 2px;
+  display: inline-grid;
+  place-content: center;
+  cursor: pointer;
+  transition: background-color 120ms, border-color 120ms;
+}
+input[type="checkbox"]:hover {
+  border-color: var(--amber-deep);
+}
+input[type="checkbox"]:checked {
+  background: var(--amber);
+  border-color: var(--amber-deep);
+}
+input[type="checkbox"]:checked::after {
+  content: "";
+  width: 0.5rem;
+  height: 0.28rem;
+  border-inline-start: 2px solid var(--rail-ink);
+  border-bottom: 2px solid var(--rail-ink);
+  transform: rotate(-45deg) translate(1px, -1px);
+}
+input[type="checkbox"]:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+/*
+  Tailwind's sr-only leaves the element at its static position. Inside an RTL
+  flex row that position can land far outside the page box, stretching the
+  document sideways and pushing the whole layout out of the visual viewport.
+  Pin visually-hidden text to the start corner; `not-sr-only` sets position back
+  to static, so the responsive variants still work.
+*/
+.sr-only {
+  inset-inline-start: 0;
+  top: 0;
 }

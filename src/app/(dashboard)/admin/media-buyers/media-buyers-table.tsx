@@ -50,7 +50,7 @@ export function MediaBuyersTable({ mediaBuyers }: { mediaBuyers: Profile[] }) {
                   })
                 }
               >
-                {mb.is_active ? dict.common.inactive : dict.common.active}
+                {mb.is_active ? dict.common.deactivate : dict.common.activate}
               </Button>
             </TableCell>
           </TableRow>

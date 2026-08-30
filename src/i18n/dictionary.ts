@@ -8,6 +8,9 @@ export interface Dictionary {
     platforms: string;
     auditLogs: string;
     signOut: string;
+    menu: string;
+    roleAdmin: string;
+    roleMediaBuyer: string;
   };
   login: {
     title: string;
@@ -19,11 +22,15 @@ export interface Dictionary {
     invalidCredentials: string;
     accountDisabled: string;
     genericError: string;
+    tagline: string;
+    brandLine: string;
+    brandSupport: string;
   };
   forbidden: {
     title: string;
     subtitle: string;
     backHome: string;
+    sheetNote: string;
   };
   common: {
     save: string;
@@ -35,6 +42,8 @@ export interface Dictionary {
     confirmDeleteBody: string;
     active: string;
     inactive: string;
+    activate: string;
+    deactivate: string;
     loading: string;
     noData: string;
     savedSuccessfully: string;
@@ -46,6 +55,13 @@ export interface Dictionary {
     actions: string;
     notes: string;
     optional: string;
+    apply: string;
+    clear: string;
+    updated: string;
+    themeLight: string;
+    themeDark: string;
+    dateFormat: string;
+    pickDate: string;
   };
   dashboard: {
     title: string;
@@ -60,6 +76,11 @@ export interface Dictionary {
     chartTitle: string;
     latestEntries: string;
     filters: string;
+    extentAll: string;
+    extentFrom: string;
+    overrun: string;
+    entriesCounted: string;
+    spendReading: string;
   };
   statistics: {
     title: string;
@@ -82,6 +103,9 @@ export interface Dictionary {
     avgDonation: string;
     createdBy: string;
     period: string;
+    groupReference: string;
+    groupFigures: string;
+    livePreview: string;
   };
   associations: {
     title: string;

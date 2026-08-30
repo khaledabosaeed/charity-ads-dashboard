@@ -30,7 +30,7 @@ export function PlatformsTable({ platforms }: { platforms: Platform[] }) {
         {platforms.map((p) => (
           <TableRow key={p.id}>
             <TableCell className="font-medium">{p.name}</TableCell>
-            <TableCell className="font-mono text-xs">{p.slug}</TableCell>
+            <TableCell className="figure text-[0.6875rem] text-ink-2">{p.slug}</TableCell>
             <TableCell>
               <Badge variant={p.is_active ? "success" : "muted"}>
                 {p.is_active ? dict.common.active : dict.common.inactive}
@@ -48,7 +48,7 @@ export function PlatformsTable({ platforms }: { platforms: Platform[] }) {
                   })
                 }
               >
-                {p.is_active ? dict.common.inactive : dict.common.active}
+                {p.is_active ? dict.common.deactivate : dict.common.activate}
               </Button>
             </TableCell>
           </TableRow>

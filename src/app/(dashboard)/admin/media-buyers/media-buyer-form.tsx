@@ -59,7 +59,7 @@ export function MediaBuyerForm({
         </>
       ) : (
         <FormItem>
-          <label className="flex items-center gap-2 text-sm">
+          <label className="flex cursor-pointer items-center gap-2.5 text-sm text-ink">
             <input type="checkbox" name="isActive" defaultChecked={profile?.is_active ?? true} />
             {dict.common.active}
           </label>
@@ -68,12 +68,12 @@ export function MediaBuyerForm({
 
       <FormItem>
         <FormLabel>{dict.mediaBuyers.associationsAssigned}</FormLabel>
-        <div className="flex flex-col gap-2 rounded-md border border-border p-3">
+        <div className="flex flex-col gap-2.5 border border-line bg-paper-raised p-3">
           {associations.length === 0 ? (
-            <span className="text-sm text-muted-foreground">{dict.common.noData}</span>
+            <span className="text-sm text-ink-3">{dict.common.noData}</span>
           ) : (
             associations.map((a) => (
-              <label key={a.id} className="flex items-center gap-2 text-sm">
+              <label key={a.id} className="flex cursor-pointer items-center gap-2.5 text-sm text-ink">
                 <input
                   type="checkbox"
                   name="associationIds"
@@ -94,7 +94,7 @@ export function MediaBuyerForm({
       </FormItem>
 
       <FormError message={state.error} />
-      <Button type="submit" disabled={isPending} className="w-fit">
+      <Button type="submit" disabled={isPending} pending={isPending} className="w-fit">
         {isPending ? dict.common.loading : dict.common.save}
       </Button>
     </form>

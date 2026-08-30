@@ -5,11 +5,12 @@ import ar from "@/i18n/dictionaries/ar";
 import en from "@/i18n/dictionaries/en";
 import type { Dictionary } from "@/i18n/dictionary";
 
-export type Locale = "ar" | "en";
+import { LOCALE_COOKIE_NAME as LOCALE_COOKIE, type Locale } from "@/i18n/config";
+
+export { LOCALE_COOKIE_NAME, DEFAULT_LOCALE } from "@/i18n/config";
+export type { Locale } from "@/i18n/config";
 
 const dictionaries: Record<Locale, Dictionary> = { ar, en };
-
-const LOCALE_COOKIE = "locale";
 
 type I18nContextValue = {
   locale: Locale;
@@ -59,4 +60,3 @@ export function getDictionary(locale: Locale) {
   return dictionaries[locale];
 }
 
-export const LOCALE_COOKIE_NAME = LOCALE_COOKIE;

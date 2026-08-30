@@ -52,7 +52,7 @@ export function AssociationsTable({ associations }: { associations: Association[
                   })
                 }
               >
-                {a.is_active ? dict.common.inactive : dict.common.active}
+                {a.is_active ? dict.common.deactivate : dict.common.activate}
               </Button>
             </TableCell>
           </TableRow>

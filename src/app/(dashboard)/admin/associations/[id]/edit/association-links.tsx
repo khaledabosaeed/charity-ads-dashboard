@@ -3,7 +3,6 @@
 import { useState, useTransition } from "react";
 import { toast } from "sonner";
 import { useI18n } from "@/i18n";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { setAssociationMediaBuyers, setAssociationPlatforms } from "../../actions";
 import type { Platform, Profile } from "@/types/domain";
@@ -22,10 +21,10 @@ function CheckboxGroup({
   return (
     <div className="flex flex-col gap-2">
       {items.map((item) => (
-        <label key={item.id} className="flex items-center gap-2 text-sm">
+        <label key={item.id} className="flex cursor-pointer items-center gap-2.5 text-sm text-ink">
           <input
             type="checkbox"
-            className="h-4 w-4 rounded border-border"
+            className="h-4 w-4 rounded border-line"
             checked={selected.has(item.id)}
             onChange={() => onToggle(item.id)}
           />
@@ -56,11 +55,11 @@ export function AssociationLinks({
 
   return (
     <div className="grid gap-6 md:grid-cols-2">
-      <Card>
-        <CardHeader>
-          <CardTitle>{dict.associations.platformsLinked}</CardTitle>
-        </CardHeader>
-        <CardContent className="flex flex-col gap-4">
+      <section className="border border-line bg-paper-raised">
+        <header className="border-b border-line px-4 py-2.5">
+          <h2 className="annot">{dict.associations.platformsLinked}</h2>
+        </header>
+        <div className="flex flex-col gap-4 px-4 py-4">
           <CheckboxGroup
             items={platforms}
             selected={platformSet}
@@ -75,7 +74,7 @@ export function AssociationLinks({
           <Button
             size="sm"
             className="w-fit"
-            disabled={isPending}
+            disabled={isPending} pending={isPending}
             onClick={() =>
               startTransition(async () => {
                 await setAssociationPlatforms(associationId, Array.from(platformSet));
@@ -85,14 +84,14 @@ export function AssociationLinks({
           >
             {dict.common.save}
           </Button>
-        </CardContent>
-      </Card>
+        </div>
+      </section>
 
-      <Card>
-        <CardHeader>
-          <CardTitle>{dict.associations.mediaBuyersLinked}</CardTitle>
-        </CardHeader>
-        <CardContent className="flex flex-col gap-4">
+      <section className="border border-line bg-paper-raised">
+        <header className="border-b border-line px-4 py-2.5">
+          <h2 className="annot">{dict.associations.mediaBuyersLinked}</h2>
+        </header>
+        <div className="flex flex-col gap-4 px-4 py-4">
           <CheckboxGroup
             items={mediaBuyers}
             selected={buyerSet}
@@ -107,7 +106,7 @@ export function AssociationLinks({
           <Button
             size="sm"
             className="w-fit"
-            disabled={isPending}
+            disabled={isPending} pending={isPending}
             onClick={() =>
               startTransition(async () => {
                 await setAssociationMediaBuyers(associationId, Array.from(buyerSet));
@@ -117,8 +116,8 @@ export function AssociationLinks({
           >
             {dict.common.save}
           </Button>
-        </CardContent>
-      </Card>
+        </div>
+      </section>
     </div>
   );
 }

@@ -3,15 +3,21 @@ import { Slot } from "@radix-ui/react-slot";
 import { cn } from "@/lib/utils";
 
 const variants = {
-  default: "bg-primary text-primary-foreground hover:opacity-90",
-  outline: "border border-border bg-card hover:bg-muted",
-  ghost: "hover:bg-muted",
-  destructive: "bg-destructive text-destructive-foreground hover:opacity-90",
+  /* The amber mass. The primary action is a drawn block, not a pill. */
+  default:
+    "bg-amber text-rail-ink border border-amber-deep hover:bg-amber-deep hover:text-rail-ink active:translate-y-px",
+  outline:
+    "border border-line-2 bg-paper-raised text-ink hover:border-line-3 hover:bg-paper-sunk active:translate-y-px",
+  ghost: "border border-transparent text-ink-2 hover:bg-paper-sunk hover:text-ink",
+  datum:
+    "bg-datum text-white border border-datum hover:bg-datum-2 active:translate-y-px dark:text-paper-sunk",
+  destructive:
+    "bg-alarm text-white border border-alarm hover:opacity-90 active:translate-y-px dark:text-paper-sunk",
 } as const;
 
 const sizes = {
-  default: "h-10 px-4 py-2",
-  sm: "h-8 px-3 text-sm",
+  default: "h-10 px-4 text-sm",
+  sm: "h-8 px-3 text-[0.8125rem]",
   icon: "h-9 w-9",
 } as const;
 
@@ -19,16 +25,22 @@ export interface ButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElemen
   variant?: keyof typeof variants;
   size?: keyof typeof sizes;
   asChild?: boolean;
+  /** Marks work in progress: a hairline is ruled along the button's edge. */
+  pending?: boolean;
 }
 
 export const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
-  ({ className, variant = "default", size = "default", asChild, ...props }, ref) => {
+  ({ className, variant = "default", size = "default", asChild, pending, ...props }, ref) => {
     const Comp = asChild ? Slot : "button";
     return (
       <Comp
         ref={ref}
+        data-pending={pending ? "" : undefined}
+        aria-busy={pending || undefined}
         className={cn(
-          "inline-flex items-center justify-center gap-2 rounded-md text-sm font-medium transition-colors disabled:pointer-events-none disabled:opacity-50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring",
+          "inline-flex shrink-0 items-center justify-center gap-2 rounded-[2px] font-medium",
+          "transition-[background-color,border-color,color,transform] duration-150",
+          "disabled:pointer-events-none disabled:opacity-45",
           variants[variant],
           sizes[size],
           className

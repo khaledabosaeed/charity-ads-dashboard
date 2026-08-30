@@ -4,14 +4,37 @@ import { useActionState, useEffect, useState } from "react";
 import { toast } from "sonner";
 import { useI18n } from "@/i18n";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
+import { Input, NativeSelect } from "@/components/ui/input";
+import { DateField } from "@/components/ui/date-field";
 import { Textarea } from "@/components/ui/textarea";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { FormError, FormItem, FormLabel } from "@/components/forms/field";
+import { SectionBand } from "@/components/drawing";
+import { formatNumber, formatPercent } from "@/lib/format";
+import { remainingBudget, spendPercentage } from "@/lib/calculations/statistics";
 import { getDefaultCurrency } from "@/lib/env";
 import type { AssociationOption } from "@/lib/data/statistics-options";
 import type { StatisticsEntry } from "@/types/domain";
 import type { ActionState } from "./actions";
+
+/** A ruled group on the sheet. The chore is repetitive; the grouping is the map. */
+function FieldGroup({
+  legend,
+  children,
+  className,
+}: {
+  legend: string;
+  children: React.ReactNode;
+  className?: string;
+}) {
+  return (
+    <fieldset className="border border-line bg-paper-raised">
+      <legend className="annot ms-4 bg-paper-raised px-2">{legend}</legend>
+      <div className={className ?? "grid gap-5 px-4 pb-5 pt-2 sm:grid-cols-2 sm:px-5"}>
+        {children}
+      </div>
+    </fieldset>
+  );
+}
 
 export function StatisticsForm({
   associations,
@@ -24,34 +47,41 @@ export function StatisticsForm({
 }) {
   const { dict } = useI18n();
   const [state, formAction, isPending] = useActionState(action, {});
-  const [associationId, setAssociationId] = useState(entry?.association_id ?? associations[0]?.id ?? "");
+  const [associationId, setAssociationId] = useState(
+    entry?.association_id ?? associations[0]?.id ?? ""
+  );
+  /* The signature interaction: the cut is drawn while you type, so the reading
+     is visible before the record is committed. */
+  const [budget, setBudget] = useState(entry?.budget ?? 0);
+  const [spent, setSpent] = useState(entry?.amount_spent ?? 0);
 
   useEffect(() => {
     if (state.error) toast.error(state.error);
   }, [state]);
 
-  const selectedAssociation = associations.find((a) => a.id === associationId);
-  const platformOptions = selectedAssociation?.platforms ?? [];
+  const platformOptions = associations.find((a) => a.id === associationId)?.platforms ?? [];
+  const remaining = remainingBudget(budget, spent);
 
   return (
-    <form action={formAction} className="flex max-w-2xl flex-col gap-4">
+    <form action={formAction} className="flex max-w-3xl flex-col gap-6">
       <input type="hidden" name="associationId" value={associationId} />
 
-      <div className="grid gap-4 sm:grid-cols-2">
+      <FieldGroup legend={dict.statistics.groupReference}>
         <FormItem>
-          <FormLabel required>{dict.statistics.association}</FormLabel>
-          <Select value={associationId} onValueChange={setAssociationId}>
-            <SelectTrigger>
-              <SelectValue placeholder="—" />
-            </SelectTrigger>
-            <SelectContent>
-              {associations.map((a) => (
-                <SelectItem key={a.id} value={a.id}>
-                  {a.name}
-                </SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
+          <FormLabel htmlFor="associationSelect" required>
+            {dict.statistics.association}
+          </FormLabel>
+          <NativeSelect
+            id="associationSelect"
+            value={associationId}
+            onChange={(e) => setAssociationId(e.target.value)}
+          >
+            {associations.map((a) => (
+              <option key={a.id} value={a.id}>
+                {a.name}
+              </option>
+            ))}
+          </NativeSelect>
           <FormError message={state.fieldErrors?.associationId} />
         </FormItem>
 
@@ -59,11 +89,10 @@ export function StatisticsForm({
           <FormLabel htmlFor="platformId" required>
             {dict.statistics.platform}
           </FormLabel>
-          <select
+          <NativeSelect
             id="platformId"
             name="platformId"
-            defaultValue={entry?.platform_id}
-            className="flex h-10 w-full rounded-md border border-border bg-card px-3 py-2 text-sm"
+            defaultValue={entry?.platform_id ?? ""}
             required
           >
             <option value="" disabled>
@@ -74,7 +103,7 @@ export function StatisticsForm({
                 {p.name}
               </option>
             ))}
-          </select>
+          </NativeSelect>
           <FormError message={state.fieldErrors?.platformId} />
         </FormItem>
 
@@ -82,10 +111,9 @@ export function StatisticsForm({
           <FormLabel htmlFor="periodStart" required>
             {dict.statistics.periodStart}
           </FormLabel>
-          <Input
+          <DateField
             id="periodStart"
             name="periodStart"
-            type="date"
             defaultValue={entry?.period_start}
             required
           />
@@ -96,7 +124,12 @@ export function StatisticsForm({
           <FormLabel htmlFor="periodEnd" required>
             {dict.statistics.periodEnd}
           </FormLabel>
-          <Input id="periodEnd" name="periodEnd" type="date" defaultValue={entry?.period_end} required />
+          <DateField
+            id="periodEnd"
+            name="periodEnd"
+            defaultValue={entry?.period_end}
+            required
+          />
           <FormError message={state.fieldErrors?.periodEnd} />
         </FormItem>
 
@@ -108,13 +141,16 @@ export function StatisticsForm({
             id="currencyCode"
             name="currencyCode"
             maxLength={3}
-            className="uppercase"
+            dir="ltr"
+            className="figure uppercase"
             defaultValue={entry?.currency_code ?? getDefaultCurrency()}
             required
           />
           <FormError message={state.fieldErrors?.currencyCode} />
         </FormItem>
+      </FieldGroup>
 
+      <FieldGroup legend={dict.statistics.groupFigures}>
         <FormItem>
           <FormLabel htmlFor="budget" required>
             {dict.statistics.budget}
@@ -126,6 +162,7 @@ export function StatisticsForm({
             min={0}
             step="0.01"
             defaultValue={entry?.budget ?? 0}
+            onChange={(e) => setBudget(Number(e.target.value) || 0)}
             required
           />
           <FormError message={state.fieldErrors?.budget} />
@@ -142,6 +179,7 @@ export function StatisticsForm({
             min={0}
             step="0.01"
             defaultValue={entry?.amount_spent ?? 0}
+            onChange={(e) => setSpent(Number(e.target.value) || 0)}
             required
           />
           <FormError message={state.fieldErrors?.amountSpent} />
@@ -210,20 +248,40 @@ export function StatisticsForm({
           />
           <FormError message={state.fieldErrors?.associationReturn} />
         </FormItem>
-      </div>
+
+        {/* the cut, drawn live */}
+        <div className="sm:col-span-2">
+          <p className="annot mb-2">{dict.statistics.livePreview}</p>
+          <SectionBand
+            animate={false}
+            budgetLabel={dict.statistics.budget}
+            budgetValue={formatNumber(budget)}
+            spentLabel={dict.statistics.amountSpent}
+            spentValue={formatNumber(spent)}
+            remainingLabel={dict.statistics.remaining}
+            remainingValue={formatNumber(Math.abs(remaining))}
+            overrunLabel={dict.dashboard.overrun}
+            budget={budget}
+            spent={spent}
+            percentText={`${formatPercent(spendPercentage(budget, spent))} ${dict.dashboard.spendReading}`}
+          />
+        </div>
+      </FieldGroup>
 
       <FormItem>
         <FormLabel htmlFor="notes">
-          {dict.common.notes} ({dict.common.optional})
+          {dict.common.notes} <span className="text-ink-3">({dict.common.optional})</span>
         </FormLabel>
         <Textarea id="notes" name="notes" defaultValue={entry?.notes ?? ""} rows={3} />
         <FormError message={state.fieldErrors?.notes} />
       </FormItem>
 
       <FormError message={state.error} />
-      <Button type="submit" disabled={isPending} className="w-fit">
-        {isPending ? dict.common.loading : dict.common.save}
-      </Button>
+      <div className="flex items-center gap-3">
+        <Button type="submit" disabled={isPending} pending={isPending}>
+          {isPending ? dict.common.loading : dict.common.save}
+        </Button>
+      </div>
     </form>
   );
 }

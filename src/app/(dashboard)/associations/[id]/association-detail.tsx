@@ -2,9 +2,28 @@
 
 import { useI18n } from "@/i18n";
 import { Badge } from "@/components/ui/badge";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { RuledHeading, TitleBlock } from "@/components/drawing";
 import { StatisticsTable } from "@/app/(dashboard)/statistics/statistics-table";
 import type { Association, StatisticsEntryWithRelations } from "@/types/domain";
+
+function LinkedList({ label, names }: { label: string; names: string[] }) {
+  return (
+    <div className="flex flex-col gap-2 px-4 py-4 sm:px-5">
+      <p className="annot">{label}</p>
+      {names.length === 0 ? (
+        <p className="text-sm text-ink-3">—</p>
+      ) : (
+        <ul className="flex flex-wrap gap-1.5">
+          {names.map((n) => (
+            <li key={n}>
+              <Badge variant="muted">{n}</Badge>
+            </li>
+          ))}
+        </ul>
+      )}
+    </div>
+  );
+}
 
 export function AssociationDetail({
   association,
@@ -22,33 +41,42 @@ export function AssociationDetail({
   const { dict } = useI18n();
 
   return (
-    <div className="flex flex-col gap-6">
-      <Card>
-        <CardHeader className="flex-row items-center justify-between">
-          <CardTitle className="text-lg text-foreground">{association.name}</CardTitle>
+    <>
+      <TitleBlock
+        title={association.name}
+        extent={association.code ? `${dict.associations.code} ${association.code}` : undefined}
+        action={
           <Badge variant={association.is_active ? "success" : "muted"}>
             {association.is_active ? dict.common.active : dict.common.inactive}
           </Badge>
-        </CardHeader>
-        <CardContent className="flex flex-col gap-3 text-sm">
-          {association.description ? <p className="text-muted-foreground">{association.description}</p> : null}
-          <div>
-            <span className="font-medium">{dict.associations.platformsLinked}: </span>
-            {platforms.length === 0 ? "—" : platforms.map((p) => p.name).join("، ")}
+        }
+      />
+
+      {association.description ? (
+        <p className="max-w-2xl text-sm leading-relaxed text-ink-2">{association.description}</p>
+      ) : null}
+
+      <div className="grid gap-px border border-line bg-line sm:grid-cols-2">
+        <div className="bg-paper-raised">
+          <LinkedList
+            label={dict.associations.platformsLinked}
+            names={platforms.map((p) => p.name)}
+          />
+        </div>
+        {isAdmin ? (
+          <div className="bg-paper-raised">
+            <LinkedList
+              label={dict.associations.mediaBuyersLinked}
+              names={mediaBuyers.map((m) => m.full_name)}
+            />
           </div>
-          {isAdmin ? (
-            <div>
-              <span className="font-medium">{dict.associations.mediaBuyersLinked}: </span>
-              {mediaBuyers.length === 0 ? "—" : mediaBuyers.map((m) => m.full_name).join("، ")}
-            </div>
-          ) : null}
-        </CardContent>
-      </Card>
+        ) : null}
+      </div>
 
       <div className="flex flex-col gap-3">
-        <h2 className="text-lg font-semibold">{dict.statistics.title}</h2>
+        <RuledHeading>{dict.statistics.title}</RuledHeading>
         <StatisticsTable entries={entries} />
       </div>
-    </div>
+    </>
   );
 }

@@ -3,7 +3,7 @@ import { Label } from "@/components/ui/label";
 import { cn } from "@/lib/utils";
 
 export function FormItem({ className, ...props }: React.HTMLAttributes<HTMLDivElement>) {
-  return <div className={cn("flex flex-col gap-1.5", className)} {...props} />;
+  return <div className={cn("flex min-w-0 flex-col gap-1.5", className)} {...props} />;
 }
 
 export function FormLabel({
@@ -14,12 +14,21 @@ export function FormLabel({
   return (
     <Label {...props}>
       {children}
-      {required ? <span className="text-destructive"> *</span> : null}
+      {required ? (
+        <span className="text-amber-deep" aria-hidden="true">
+          {" *"}
+        </span>
+      ) : null}
     </Label>
   );
 }
 
+/** A correction note, in the drawing's red. */
 export function FormError({ message }: { message?: string }) {
   if (!message) return null;
-  return <p className="text-sm text-destructive">{message}</p>;
+  return (
+    <p role="alert" className="text-[0.8125rem] leading-snug text-alarm">
+      {message}
+    </p>
+  );
 }
