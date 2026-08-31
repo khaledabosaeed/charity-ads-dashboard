@@ -24,16 +24,24 @@ export function DateField({
   defaultValue,
   required,
   className,
+  onValueChange,
 }: {
   id: string;
   name: string;
   defaultValue?: string;
   required?: boolean;
   className?: string;
+  /** Fires on every keystroke and pick — callers decide what counts as a date. */
+  onValueChange?: (value: string) => void;
 }) {
   const { dict } = useI18n();
   const [value, setValue] = React.useState(defaultValue ?? "");
   const pickerRef = React.useRef<HTMLInputElement>(null);
+
+  function write(next: string) {
+    setValue(next);
+    onValueChange?.(next);
+  }
 
   return (
     <div className="relative">
@@ -46,7 +54,7 @@ export function DateField({
         dir="ltr"
         required={required}
         value={value}
-        onChange={(e) => setValue(e.target.value)}
+        onChange={(e) => write(e.target.value)}
         placeholder={dict.common.dateFormat}
         pattern="\d{4}-\d{2}-\d{2}"
         title={dict.common.dateFormat}
@@ -60,7 +68,7 @@ export function DateField({
         tabIndex={-1}
         aria-hidden="true"
         value={ISO.test(value) ? value : ""}
-        onChange={(e) => setValue(e.target.value)}
+        onChange={(e) => write(e.target.value)}
         className="pointer-events-none absolute bottom-1 right-9 h-0 w-0 border-0 p-0 opacity-0"
       />
 

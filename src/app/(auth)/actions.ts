@@ -33,7 +33,8 @@ export async function loginAction(_prevState: LoginState, formData: FormData): P
     return { error: "account_disabled" };
   }
 
-  redirect("/dashboard");
+  /* "/" routes each role to its own landing sheet. */
+  redirect("/");
 }
 
 export async function signOutAction() {

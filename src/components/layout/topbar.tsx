@@ -1,6 +1,6 @@
 "use client";
 
-import { LogOut, Menu, X } from "lucide-react";
+import { LogOut, Menu, PanelLeft, PanelRight, X } from "lucide-react";
 import { useI18n } from "@/i18n";
 import { Button } from "@/components/ui/button";
 import { LocaleSwitcher } from "@/components/layout/locale-switcher";
@@ -17,11 +17,19 @@ import { signOutAction } from "@/app/(auth)/actions";
 export function Topbar({
   menuOpen,
   onMenuClick,
+  railOpen,
+  onRailToggle,
 }: {
   menuOpen?: boolean;
   onMenuClick?: () => void;
+  railOpen?: boolean;
+  onRailToggle?: () => void;
 }) {
-  const { dict } = useI18n();
+  const { dict, locale } = useI18n();
+
+  /* The glyph points at the edge the rail actually lives on in this direction. */
+  const PanelIcon = locale === "ar" ? PanelRight : PanelLeft;
+  const railLabel = railOpen ? dict.nav.collapseRail : dict.nav.expandRail;
 
   const onRailGhost =
     "text-rail-ink hover:bg-rail-line md:text-ink-2 md:hover:bg-paper-sunk md:hover:text-ink";
@@ -47,6 +55,20 @@ export function Topbar({
           ) : (
             <Menu className="h-5 w-5" strokeWidth={1.75} aria-hidden="true" />
           )}
+        </Button>
+      ) : null}
+
+      {onRailToggle ? (
+        <Button
+          variant="ghost"
+          size="icon"
+          className={"hidden md:inline-flex " + onRailGhost}
+          onClick={onRailToggle}
+          aria-expanded={railOpen}
+          aria-label={railLabel}
+          title={railLabel}
+        >
+          <PanelIcon className="h-5 w-5" strokeWidth={1.75} aria-hidden="true" />
         </Button>
       ) : null}
 

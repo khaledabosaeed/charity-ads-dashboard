@@ -25,7 +25,8 @@ Not a generic ad-analytics tool. It is scoped to the charity-advertising relatio
 
 ## Operating Context
 
-- Routes: `/login`, `/dashboard`, `/statistics` (+ `/statistics/new`, `/statistics/[id]/edit`), `/associations/[id]`, and admin routes `/admin/associations`, `/admin/media-buyers`, `/admin/platforms`, `/admin/audit-logs`.
+- Routes: `/login`; the media buyer's four sheets `/entry`, `/daily`, `/platforms`, `/associations`; the admin's `/dashboard`, `/statistics` (+ `/statistics/new`, `/statistics/[id]/edit`), `/associations/[id]`, and `/admin/associations`, `/admin/media-buyers`, `/admin/platforms`, `/admin/audit-logs`. `/` sends each role to its own landing sheet.
+- A media buyer's day is entered on `/entry` as one sheet per day: date + association, then spend and advertising return for every linked platform at once, saved in a single stroke. Each platform line is stored as an ordinary statistics entry whose period is that single day, so the day sheet and the full per-period form write the same record; re-saving a day corrects it rather than duplicating it.
 - The dashboard is a filtered view (association, platform, date from/to) over the same statistics entries the statistics page lists, plus aggregate cards, a spend-versus-return time chart, and the ten latest entries.
 - Entry is form-driven and repetitive: the same eight numeric fields per period.
 - Every write is audit-logged; admins read that log.
@@ -35,7 +36,7 @@ Not a generic ad-analytics tool. It is scoped to the charity-advertising relatio
 
 - Next.js 16 App Router, React 19, Tailwind CSS v4 (CSS-first `@theme`, no `tailwind.config`), Supabase (auth + Postgres + RLS), server actions for all mutations, `react-hook-form` + `zod`, `recharts` for charts, `sonner` for toasts, `lucide-react` for icons, Radix primitives under `src/components/ui`.
 - Derived metrics live in `src/lib/calculations/statistics.ts`: remaining budget, spend percentage, ROAS, average donation. These are product truth and must not be recomputed inline in views.
-- Currency is configurable (`NEXT_PUBLIC_DEFAULT_CURRENCY`, default `USD`); values are stored per entry with an ISO code.
+- The books are kept in Saudi riyals: currency stays configurable (`NEXT_PUBLIC_DEFAULT_CURRENCY`, default `SAR`) and values are stored per entry with an ISO code, but the unit is read as ر.س in Arabic and SAR in English.
 - Arabic is the default locale; all copy lives in `src/i18n/dictionaries/{ar,en}.ts` and both dictionaries must stay in sync with the `Dictionary` type.
 - Confirmed decision: the app ships **both light and dark themes with an explicit user toggle** in the app chrome, persisted, rather than following the OS silently.
 - Confirmed decision: the restyle covers the **whole app** — tokens, login, shell, dashboard, statistics, and admin screens.

@@ -30,5 +30,5 @@ export function getAppName(): string {
 }
 
 export function getDefaultCurrency(): string {
-  return process.env.NEXT_PUBLIC_DEFAULT_CURRENCY || "USD";
+  return process.env.NEXT_PUBLIC_DEFAULT_CURRENCY || "SAR";
 }

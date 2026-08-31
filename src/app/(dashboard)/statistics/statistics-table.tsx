@@ -18,7 +18,7 @@ import type { StatisticsEntryWithRelations } from "@/types/domain";
 
 /** The schedule. Figure columns are tabular and end-aligned so digits stack. */
 export function StatisticsTable({ entries }: { entries: StatisticsEntryWithRelations[] }) {
-  const { dict } = useI18n();
+  const { dict, locale } = useI18n();
 
   if (entries.length === 0) return <EmptyState />;
 
@@ -57,12 +57,12 @@ export function StatisticsTable({ entries }: { entries: StatisticsEntryWithRelat
               <TableCell className="figure whitespace-nowrap text-[0.8125rem] text-ink-2">
                 {formatPeriod(e.period_start, e.period_end)}
               </TableCell>
-              <TableCell numeric>{formatMoney(e.budget, e.currency_code)}</TableCell>
+              <TableCell numeric>{formatMoney(e.budget, e.currency_code, locale)}</TableCell>
               <TableCell numeric className="text-amber-ink">
-                {formatMoney(e.amount_spent, e.currency_code)}
+                {formatMoney(e.amount_spent, e.currency_code, locale)}
               </TableCell>
               <TableCell numeric className={cn(over ? "font-semibold text-alarm" : "text-datum")}>
-                {formatMoney(remaining, e.currency_code)}
+                {formatMoney(remaining, e.currency_code, locale)}
               </TableCell>
               <TableCell numeric className={cn(over && "font-semibold text-alarm")}>
                 {formatPercent(pct)}
@@ -72,11 +72,11 @@ export function StatisticsTable({ entries }: { entries: StatisticsEntryWithRelat
               </TableCell>
               <TableCell numeric>
                 {formatMetric(avgDonationValue(e.donation_value, e.donation_count), (n) =>
-                  formatMoney(n, e.currency_code)
+                  formatMoney(n, e.currency_code, locale)
                 )}
               </TableCell>
               <TableCell numeric>{formatCount(e.donation_count)}</TableCell>
-              <TableCell numeric>{formatMoney(e.association_return, e.currency_code)}</TableCell>
+              <TableCell numeric>{formatMoney(e.association_return, e.currency_code, locale)}</TableCell>
               <TableCell className="whitespace-nowrap text-ink-2">
                 {e.author?.full_name ?? "—"}
               </TableCell>

@@ -27,7 +27,7 @@ NEXT_PUBLIC_SUPABASE_URL=
 NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY=   # or NEXT_PUBLIC_SUPABASE_ANON_KEY on older projects
 SUPABASE_SERVICE_ROLE_KEY=              # server-only, never exposed to the browser
 NEXT_PUBLIC_APP_NAME=لوحة إعلانات الجمعيات
-NEXT_PUBLIC_DEFAULT_CURRENCY=USD
+NEXT_PUBLIC_DEFAULT_CURRENCY=SAR
 ```
 
 `src/lib/env.ts` throws a clear error naming the missing variable the first time any code path

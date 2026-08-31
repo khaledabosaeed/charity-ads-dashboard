@@ -2,6 +2,10 @@ export interface Dictionary {
   appName: string;
   nav: {
     dashboard: string;
+    dailyEntry: string;
+    dailyReport: string;
+    platformsSummary: string;
+    associationsPerformance: string;
     statistics: string;
     associations: string;
     mediaBuyers: string;
@@ -9,6 +13,8 @@ export interface Dictionary {
     auditLogs: string;
     signOut: string;
     menu: string;
+    collapseRail: string;
+    expandRail: string;
     roleAdmin: string;
     roleMediaBuyer: string;
   };
@@ -81,6 +87,32 @@ export interface Dictionary {
     overrun: string;
     entriesCounted: string;
     spendReading: string;
+  };
+  daily: {
+    entryTitle: string;
+    greeting: string;
+    date: string;
+    choose: string;
+    saveDay: string;
+    saving: string;
+    platformsData: string;
+    daySummary: string;
+    totalSpend: string;
+    totalRevenue: string;
+    overallRoas: string;
+    activePlatforms: string;
+    noPlatforms: string;
+    noAssociations: string;
+    reportTitle: string;
+    entriesCount: string;
+    lines: string;
+    day: string;
+    mediaBuyer: string;
+    platformsTitle: string;
+    activeDays: string;
+    clientsTitle: string;
+    rank: string;
+    view: string;
   };
   statistics: {
     title: string;
