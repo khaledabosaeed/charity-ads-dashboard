@@ -104,7 +104,7 @@ export async function setAssociationMediaBuyers(associationId: string, mediaBuye
     );
   }
   revalidatePath(`/admin/associations/${associationId}/edit`);
-  revalidatePath("/admin/media-buyers");
+  revalidatePath("/admin/users");
 }
 
 function flatten(error: import("zod").ZodError): Record<string, string> {

@@ -25,11 +25,12 @@ Not a generic ad-analytics tool. It is scoped to the charity-advertising relatio
 
 ## Operating Context
 
-- Routes: `/login`; the media buyer's four sheets `/entry`, `/daily`, `/platforms`, `/associations`; the admin's `/dashboard`, `/statistics` (+ `/statistics/new`, `/statistics/[id]/edit`), `/associations/[id]`, and `/admin/associations`, `/admin/media-buyers`, `/admin/platforms`, `/admin/audit-logs`. `/` sends each role to its own landing sheet.
+- Routes: `/login`; the media buyer's four sheets `/entry`, `/daily`, `/platforms`, `/associations`; the admin's `/dashboard`, `/statistics` (+ `/statistics/new`, `/statistics/[id]/edit`), `/associations/[id]`, and `/admin/associations`, `/admin/users`, `/admin/platforms`, `/admin/audit-logs`. `/` sends each role to its own landing sheet.
 - A media buyer's day is entered on `/entry` as one sheet per day: date + association, then spend and advertising return for every linked platform at once, saved in a single stroke. Each platform line is stored as an ordinary statistics entry whose period is that single day, so the day sheet and the full per-period form write the same record; re-saving a day corrects it rather than duplicating it.
 - The dashboard is a filtered view (association, platform, date from/to) over the same statistics entries the statistics page lists, plus aggregate cards, a spend-versus-return time chart, and the ten latest entries.
 - Entry is form-driven and repetitive: the same eight numeric fields per period.
 - Every write is audit-logged; admins read that log.
+- Account management is one screen, `/admin/users`: an admin creates either kind of account (admin or media buyer), changes any account's email and password, and assigns associations to media buyers only. Anyone signed in changes their own email and password at `/account`, where the current password is re-checked first. The last active admin cannot be demoted or disabled, and no admin can demote or disable themselves.
 - Locale is cookie-persisted; `dir` flips between `rtl` and `ltr` at the `<html>` level, so every layout decision must be direction-agnostic (logical properties, not left/right).
 
 ## Capabilities and Constraints

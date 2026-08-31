@@ -8,7 +8,7 @@ export interface Dictionary {
     associationsPerformance: string;
     statistics: string;
     associations: string;
-    mediaBuyers: string;
+    users: string;
     platforms: string;
     auditLogs: string;
     signOut: string;
@@ -150,15 +150,25 @@ export interface Dictionary {
     platformsLinked: string;
     mediaBuyersLinked: string;
   };
-  mediaBuyers: {
+  users: {
     title: string;
     new: string;
     edit: string;
     fullName: string;
     email: string;
     password: string;
+    newPassword: string;
+    currentPassword: string;
+    blankKeeps: string;
+    credentials: string;
+    role: string;
     status: string;
     associationsAssigned: string;
+    adminSeesEverything: string;
+    selfRoleLocked: string;
+    you: string;
+    account: string;
+    emailPending: string;
   };
   platforms: {
     title: string;
@@ -173,5 +183,20 @@ export interface Dictionary {
     table: string;
     record: string;
     date: string;
+    /** The three writes a trigger records, named rather than shouted in SQL. */
+    actions: {
+      INSERT: string;
+      UPDATE: string;
+      DELETE: string;
+    };
+    /** Table names read as the thing they hold, not as their SQL identifier. */
+    tables: {
+      statistics_entries: string;
+      associations: string;
+      platforms: string;
+      profiles: string;
+      association_platforms: string;
+      association_media_buyers: string;
+    };
   };
 }

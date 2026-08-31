@@ -127,7 +127,7 @@ This build sandbox has no Docker, so `supabase start`, `supabase db reset`, and
   reference other tables, so this is the closest DB-level equivalent, satisfying "نفّذ التحقق
   مرتين" in spirit (validated in three places: Zod, RLS `WITH CHECK`, and this trigger).
 - **Email confirmation** for media-buyer accounts created by admins: set `email_confirm: true` on
-  creation (`src/app/(dashboard)/admin/media-buyers/actions.ts`) so they can log in immediately
+  creation (`src/app/(dashboard)/admin/users/actions.ts`) so they can log in immediately
   without a confirmation email step — simplest MVP choice, since admins are creating these
   accounts directly and vouching for the email.
 - **Password reset flow**: out of scope for this MVP (not requested); admins can deactivate an
@@ -144,7 +144,7 @@ src/
       statistics/                 # list/new/edit, RLS-scoped
       associations/[id]/          # shared association detail page
       admin/                      # gated again by requireAdmin() in layout.tsx
-        associations/ media-buyers/ platforms/ audit-logs/
+        associations/ users/ platforms/ audit-logs/
     forbidden/                    # permission-error page
   components/
     ui/                           # hand-built shadcn-style primitives

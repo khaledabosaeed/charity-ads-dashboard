@@ -1,9 +1,9 @@
 import { createClient } from "@/lib/supabase/server";
 import { PageHeading } from "@/components/layout/page-heading";
-import { MediaBuyerForm } from "../media-buyer-form";
-import { createMediaBuyer } from "../actions";
+import { UserForm } from "../user-form";
+import { createUser } from "../actions";
 
-export default async function NewMediaBuyerPage() {
+export default async function NewUserPage() {
   const supabase = await createClient();
   const { data: associations } = await supabase
     .from("associations")
@@ -13,8 +13,8 @@ export default async function NewMediaBuyerPage() {
 
   return (
     <div className="flex flex-col gap-6">
-      <PageHeading titleKey="mediaBuyers.new" />
-      <MediaBuyerForm associations={associations ?? []} action={createMediaBuyer} showPassword />
+      <PageHeading titleKey="users.new" />
+      <UserForm associations={associations ?? []} action={createUser} mode="create" />
     </div>
   );
 }

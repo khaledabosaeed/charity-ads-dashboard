@@ -1,6 +1,7 @@
 "use client";
 
 import { useCallback, useEffect, useState } from "react";
+import Link from "next/link";
 import { Sidebar } from "@/components/layout/sidebar";
 import { Topbar } from "@/components/layout/topbar";
 import { Lockup, Stamp } from "@/components/brand/lockup";
@@ -42,29 +43,32 @@ function Rail({
 
       <Sidebar role={profile.role} collapsed={collapsed} onNavigate={onNavigate} />
 
-      <div
-        className={cn(
-          "mt-auto border-t border-rail-line/60",
-          collapsed ? "p-2 text-center" : "p-4"
-        )}
-      >
-        {collapsed ? (
-          <p
-            className="figure text-[0.8125rem] font-semibold text-rail-ink"
-            title={profile.full_name}
-          >
-            {profile.full_name.trim().charAt(0)}
-          </p>
-        ) : (
-          <>
-            <p className="truncate text-[0.8125rem] font-semibold text-rail-ink">
-              {profile.full_name}
-            </p>
-            <p className="annot mt-0.5">
-              {profile.role === "admin" ? dict.nav.roleAdmin : dict.nav.roleMediaBuyer}
-            </p>
-          </>
-        )}
+      {/* The plate names who drew the sheet — and opens their own account. */}
+      <div className={cn("mt-auto border-t border-rail-line/60", collapsed ? "p-2" : "p-3")}>
+        <Link
+          href="/account"
+          onClick={onNavigate}
+          title={collapsed ? `${profile.full_name} — ${dict.users.account}` : dict.users.account}
+          className={cn(
+            "block rounded-[2px] transition-colors duration-150 hover:bg-rail-line",
+            collapsed ? "px-0 py-2 text-center" : "px-2 py-1.5"
+          )}
+        >
+          {collapsed ? (
+            <span className="text-[0.8125rem] font-semibold text-rail-ink">
+              {profile.full_name.trim().charAt(0)}
+            </span>
+          ) : (
+            <>
+              <span className="block truncate text-[0.8125rem] font-semibold text-rail-ink">
+                {profile.full_name}
+              </span>
+              <span className="annot mt-0.5 block">
+                {profile.role === "admin" ? dict.nav.roleAdmin : dict.nav.roleMediaBuyer}
+              </span>
+            </>
+          )}
+        </Link>
       </div>
     </>
   );

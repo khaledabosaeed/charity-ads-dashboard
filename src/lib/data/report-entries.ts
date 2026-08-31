@@ -62,15 +62,15 @@ export async function getReportEntries(
 export type MediaBuyerOption = { id: string; name: string };
 
 /**
- * The media buyers a report may be narrowed to. Only an admin sees more than
- * themselves here — the profiles policy returns nothing else to anyone.
+ * The people a report may be narrowed to — anyone who can author an entry, so
+ * admins filing a day on their own account are included. Only an admin sees
+ * more than themselves here: the profiles policy returns nothing else to anyone.
  */
 export async function getMediaBuyerOptions(): Promise<MediaBuyerOption[]> {
   const supabase = await createClient();
   const { data } = await supabase
     .from("profiles")
     .select("id, full_name")
-    .eq("role", "media_buyer")
     .eq("is_active", true)
     .order("full_name");
 

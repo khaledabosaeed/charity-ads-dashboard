@@ -39,7 +39,7 @@ export function useNavItems(role: UserRole) {
     { href: "/daily", label: dict.nav.dailyReport, icon: ClipboardList },
     { href: "/statistics", label: dict.nav.statistics, icon: ListChecks },
     { href: "/admin/associations", label: dict.nav.associations, icon: Building2 },
-    { href: "/admin/media-buyers", label: dict.nav.mediaBuyers, icon: Users },
+    { href: "/admin/users", label: dict.nav.users, icon: Users },
     { href: "/admin/platforms", label: dict.nav.platforms, icon: Radio },
     { href: "/admin/audit-logs", label: dict.nav.auditLogs, icon: ScrollText },
   ];

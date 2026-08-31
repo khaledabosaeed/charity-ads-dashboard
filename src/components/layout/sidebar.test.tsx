@@ -29,16 +29,21 @@ describe("Sidebar", () => {
       "/associations"
     );
     expect(screen.queryByRole("link", { name: ar.nav.auditLogs })).not.toBeInTheDocument();
+    expect(screen.queryByRole("link", { name: ar.nav.users })).not.toBeInTheDocument();
     expect(screen.getByRole("link", { name: ar.nav.dailyEntry })).toHaveAttribute(
       "aria-current",
       "page"
     );
   });
 
-  it("keeps the admin's own rail", () => {
+  it("keeps the admin's own rail, users sheet included", () => {
     renderRail({ role: "admin" });
     expect(screen.getByRole("link", { name: ar.nav.auditLogs })).toBeInTheDocument();
     expect(screen.getByRole("link", { name: ar.nav.dashboard })).toBeInTheDocument();
+    expect(screen.getByRole("link", { name: ar.nav.users })).toHaveAttribute(
+      "href",
+      "/admin/users"
+    );
   });
 
   it("closed, keeps every destination reachable and named", () => {

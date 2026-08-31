@@ -12,6 +12,15 @@ function badgeVariant(action: string) {
   return "default" as const;
 }
 
+/**
+ * The log is written by a trigger, in SQL's own words: INSERT on
+ * statistics_entries. The sheet reads them back in the reader's words, and
+ * falls back to the raw identifier for anything a future trigger adds.
+ */
+function labelFor<T extends Record<string, string>>(labels: T, key: string): string {
+  return labels[key as keyof T] ?? key;
+}
+
 export function AuditLogsTable({ logs }: { logs: AuditLogWithActor[] }) {
   const { dict, locale } = useI18n();
 
@@ -32,13 +41,20 @@ export function AuditLogsTable({ logs }: { logs: AuditLogWithActor[] }) {
         {logs.map((log) => (
           <TableRow key={log.id}>
             <TableCell pinned className="whitespace-nowrap figure text-[0.6875rem] text-ink-2">
-              {new Date(log.created_at).toLocaleString(locale === "ar" ? "ar-EG" : "en-US")}
+              {/* Arabic wording, Latin figures — a date is a measurement too. */}
+              {new Date(log.created_at).toLocaleString(
+                locale === "ar" ? "ar-EG-u-nu-latn" : "en-US"
+              )}
             </TableCell>
             <TableCell>{log.actor?.full_name ?? "—"}</TableCell>
             <TableCell>
-              <Badge variant={badgeVariant(log.action)}>{log.action}</Badge>
+              <Badge variant={badgeVariant(log.action)}>
+                {labelFor(dict.auditLogs.actions, log.action)}
+              </Badge>
             </TableCell>
-            <TableCell className="figure text-[0.6875rem] text-ink-2">{log.table_name}</TableCell>
+            <TableCell className="text-ink-2">
+              {labelFor(dict.auditLogs.tables, log.table_name)}
+            </TableCell>
             <TableCell className="figure text-[0.6875rem] text-ink-2">{log.record_id ?? "—"}</TableCell>
           </TableRow>
         ))}
