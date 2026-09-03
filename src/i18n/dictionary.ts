@@ -76,6 +76,7 @@ export interface Dictionary {
     remainingBudget: string;
     donationCount: string;
     donationValue: string;
+    orderCount: string;
     advertisingReturn: string;
     associationReturn: string;
     avgRoas: string;
@@ -87,6 +88,17 @@ export interface Dictionary {
     overrun: string;
     entriesCounted: string;
     spendReading: string;
+    aov: string;
+    conversionRate: string;
+    costPerOrder: string;
+    presetToday: string;
+    presetYesterday: string;
+    presetLast7: string;
+    presetThisMonth: string;
+    presetLastMonth: string;
+    presetMax: string;
+    roasComparisonTitle: string;
+    spendShareTitle: string;
   };
   daily: {
     entryTitle: string;
@@ -99,6 +111,7 @@ export interface Dictionary {
     daySummary: string;
     totalSpend: string;
     totalRevenue: string;
+    totalOrders: string;
     overallRoas: string;
     activePlatforms: string;
     noPlatforms: string;
@@ -113,6 +126,10 @@ export interface Dictionary {
     clientsTitle: string;
     rank: string;
     view: string;
+    storeSalesTitle: string;
+    storeOrderCount: string;
+    storeSalesValue: string;
+    storeVisitCount: string;
   };
   statistics: {
     title: string;
@@ -127,12 +144,17 @@ export interface Dictionary {
     amountSpent: string;
     donationCount: string;
     donationValue: string;
+    orderCount: string;
     advertisingReturn: string;
     associationReturn: string;
     remaining: string;
     spendPct: string;
     roas: string;
     avgDonation: string;
+    resultCount: string;
+    costPerResult: string;
+    avgResultValue: string;
+    donationsPixel: string;
     createdBy: string;
     period: string;
     groupReference: string;

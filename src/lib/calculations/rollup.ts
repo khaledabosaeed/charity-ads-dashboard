@@ -9,6 +9,8 @@ import { roas } from "@/lib/calculations/statistics";
 export type RollupSource = {
   amount_spent: number;
   advertising_return: number;
+  order_count: number;
+  donation_value: number;
   period_start: string;
   currency_code: string;
 };
@@ -16,6 +18,9 @@ export type RollupSource = {
 export type Rollup = {
   spend: number;
   revenue: number;
+  orders: number;
+  /** Pixel-reported donation value — distinct from `revenue` (advertising_return). */
+  donations: number;
   /** Return on ad spend for the whole roll-up. Null while nothing was spent. */
   roas: number | null;
   /** Distinct dates carrying spend or return — how long the campaign ran. */
@@ -26,17 +31,23 @@ export type Rollup = {
 export function rollup(entries: RollupSource[]): Rollup {
   let spend = 0;
   let revenue = 0;
+  let orders = 0;
+  let donations = 0;
   const days = new Set<string>();
 
   for (const e of entries) {
     spend += e.amount_spent;
     revenue += e.advertising_return;
+    orders += e.order_count;
+    donations += e.donation_value;
     if (e.amount_spent > 0 || e.advertising_return > 0) days.add(e.period_start);
   }
 
   return {
     spend,
     revenue,
+    orders,
+    donations,
     roas: roas(revenue, spend),
     activeDays: days.size,
     entries: entries.length,

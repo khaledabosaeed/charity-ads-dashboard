@@ -7,6 +7,7 @@ export type AssociationPlatform = Database["public"]["Tables"]["association_plat
 export type AssociationMediaBuyer =
   Database["public"]["Tables"]["association_media_buyers"]["Row"];
 export type StatisticsEntry = Database["public"]["Tables"]["statistics_entries"]["Row"];
+export type StoreSalesEntry = Database["public"]["Tables"]["store_sales_entries"]["Row"];
 export type AuditLog = Database["public"]["Tables"]["audit_logs"]["Row"];
 export type AuditLogWithActor = AuditLog & { actor: Pick<Profile, "full_name"> | null };
 

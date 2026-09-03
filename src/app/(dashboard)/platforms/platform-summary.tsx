@@ -1,8 +1,8 @@
 "use client";
 
 import { useI18n } from "@/i18n";
-import { currencyMark, formatCount, formatNumber } from "@/lib/format";
-import { formatMetric } from "@/lib/calculations/statistics";
+import { currencyMark, formatCount, formatMoney, formatNumber } from "@/lib/format";
+import { avgDonationValue, costPerResult, formatMetric } from "@/lib/calculations/statistics";
 import type { Rollup } from "@/lib/calculations/rollup";
 
 export type PlatformReading = { id: string; label: string; totals: Rollup };
@@ -34,6 +34,33 @@ function PlatformCell({ reading, unit }: { reading: PlatformReading; unit: strin
           <dt className="annot">{dict.statistics.advertisingReturn}</dt>
           <dd className="figure text-base font-semibold text-datum">
             {formatNumber(totals.revenue)}
+            {unit ? <span className="ms-1 text-[0.6875rem] text-ink-3">{currencyMark(unit, locale)}</span> : null}
+          </dd>
+        </div>
+        <div className="flex items-baseline justify-between gap-3">
+          <dt className="annot">{dict.statistics.costPerResult}</dt>
+          <dd className="figure text-base font-semibold text-amber-ink">
+            {formatMetric(costPerResult(totals.spend, totals.orders), (n) =>
+              unit ? formatMoney(n, unit, locale) : formatNumber(n)
+            )}
+          </dd>
+        </div>
+        <div className="flex items-baseline justify-between gap-3">
+          <dt className="annot">{dict.statistics.resultCount}</dt>
+          <dd className="figure text-base font-semibold text-ink">{formatCount(totals.orders)}</dd>
+        </div>
+        <div className="flex items-baseline justify-between gap-3">
+          <dt className="annot">{dict.statistics.avgResultValue}</dt>
+          <dd className="figure text-base font-semibold text-ink">
+            {formatMetric(avgDonationValue(totals.donations, totals.orders), (n) =>
+              unit ? formatMoney(n, unit, locale) : formatNumber(n)
+            )}
+          </dd>
+        </div>
+        <div className="flex items-baseline justify-between gap-3">
+          <dt className="annot">{dict.statistics.donationsPixel}</dt>
+          <dd className="figure text-base font-semibold text-datum">
+            {formatNumber(totals.donations)}
             {unit ? <span className="ms-1 text-[0.6875rem] text-ink-3">{currencyMark(unit, locale)}</span> : null}
           </dd>
         </div>

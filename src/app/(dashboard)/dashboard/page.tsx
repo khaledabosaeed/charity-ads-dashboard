@@ -1,11 +1,15 @@
 import { createClient } from "@/lib/supabase/server";
 import { getAvailableAssociationsWithPlatforms } from "@/lib/data/statistics-options";
+import { getStoreSalesEntries, sumStoreSales } from "@/lib/data/store-sales";
+import { previousPeriod } from "@/lib/dates/presets";
+import { rollupBy, unifiedCurrency } from "@/lib/calculations/rollup";
 import { PageHeading } from "@/components/layout/page-heading";
 import { RuledHeading } from "@/components/drawing";
 import { StatisticsFilters } from "@/app/(dashboard)/statistics/statistics-filters";
 import { StatisticsTable } from "@/app/(dashboard)/statistics/statistics-table";
 import { DashboardFigures } from "./dashboard-figures";
 import { DashboardChart } from "./dashboard-chart";
+import { DashboardExtras } from "./dashboard-extras";
 import { EmptyState } from "@/components/layout/empty-state";
 import { NewLinkButton } from "@/components/layout/new-link-button";
 import { ExtentLabel, LatestEntriesLabel } from "./section-label";
@@ -19,23 +23,59 @@ export default async function DashboardPage({
   const params = await searchParams;
   const supabase = await createClient();
 
-  let query = supabase
-    .from("statistics_entries")
-    .select("*, association:associations(id, name), platform:platforms(id, name), author:profiles(id, full_name)")
-    .order("period_start", { ascending: true });
+  async function fetchEntries(from?: string, to?: string) {
+    let query = supabase
+      .from("statistics_entries")
+      .select(
+        "*, association:associations(id, name), platform:platforms(id, name), author:profiles(id, full_name)"
+      )
+      .order("period_start", { ascending: true });
 
-  if (params.associationId) query = query.eq("association_id", params.associationId);
-  if (params.platformId) query = query.eq("platform_id", params.platformId);
-  if (params.from) query = query.gte("period_start", params.from);
-  if (params.to) query = query.lte("period_end", params.to);
+    if (params.associationId) query = query.eq("association_id", params.associationId);
+    if (params.platformId) query = query.eq("platform_id", params.platformId);
+    if (from) query = query.gte("period_start", from);
+    if (to) query = query.lte("period_end", to);
 
-  const [{ data: entriesAsc }, associations] = await Promise.all([
-    query,
+    const { data } = await query;
+    return (data as unknown as StatisticsEntryWithRelations[]) ?? [];
+  }
+
+  /* The comparison badges need the equivalent stretch of time right before the
+     current extent. Without both bounds there is no fixed-length window to
+     mirror, so the previous period is simply left empty. */
+  const previous = params.from && params.to ? previousPeriod(params.from, params.to) : undefined;
+
+  const [entries, previousEntries, associations, storeSalesEntries] = await Promise.all([
+    fetchEntries(params.from, params.to),
+    previous ? fetchEntries(previous.from, previous.to) : Promise.resolve([]),
     getAvailableAssociationsWithPlatforms(),
+    getStoreSalesEntries({
+      associationId: params.associationId,
+      from: params.from,
+      to: params.to,
+    }),
   ]);
 
-  const entries = (entriesAsc as unknown as StatisticsEntryWithRelations[]) ?? [];
+  const storeSales = sumStoreSales(storeSalesEntries);
+  const totalSpent = entries.reduce((acc, e) => acc + e.amount_spent, 0);
+
   const latest = [...entries].reverse().slice(0, 10);
+
+  const seed = Array.from(
+    new Map(
+      associations
+        .filter((a) => !params.associationId || a.id === params.associationId)
+        .flatMap((a) => a.platforms)
+        .filter((p) => !params.platformId || p.id === params.platformId)
+        .map((p) => [p.id, { id: p.id, label: p.name }])
+    ).values()
+  );
+  const platformReadings = rollupBy(
+    entries,
+    (e) => (e.platform ? { id: e.platform.id, label: e.platform.name } : null),
+    seed
+  ).map(({ id, label, totals }) => ({ id, label, totals }));
+  const unit = unifiedCurrency(entries);
 
   /* The revision line of a drawing records when it was last drawn. */
   const drawnOn = new Date().toISOString().slice(0, 10);
@@ -50,12 +90,21 @@ export default async function DashboardPage({
       />
       <StatisticsFilters associations={associations} searchParams={params} />
 
-      {entries.length === 0 ? (
+      {entries.length === 0 && storeSalesEntries.length === 0 ? (
         <EmptyState action={<NewLinkButton href="/statistics/new" labelKey="statistics.new" />} />
       ) : (
         <>
-          <DashboardFigures entries={entries} />
+          <DashboardFigures entries={entries} previousEntries={previousEntries} />
+
+          <DashboardExtras
+            platformReadings={platformReadings}
+            unit={unit}
+            storeSales={storeSales}
+            totalSpent={totalSpent}
+          />
+
           <DashboardChart entries={entries} />
+
           <div className="flex flex-col gap-3">
             <RuledHeading>
               <LatestEntriesLabel />

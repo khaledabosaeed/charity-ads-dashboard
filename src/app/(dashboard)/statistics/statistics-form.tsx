@@ -202,6 +202,22 @@ export function StatisticsForm({
         </FormItem>
 
         <FormItem>
+          <FormLabel htmlFor="orderCount" required>
+            {dict.statistics.orderCount}
+          </FormLabel>
+          <Input
+            id="orderCount"
+            name="orderCount"
+            type="number"
+            min={0}
+            step="1"
+            defaultValue={entry?.order_count ?? 0}
+            required
+          />
+          <FormError message={state.fieldErrors?.orderCount} />
+        </FormItem>
+
+        <FormItem>
           <FormLabel htmlFor="donationValue" required>
             {dict.statistics.donationValue}
           </FormLabel>

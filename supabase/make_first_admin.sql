@@ -5,11 +5,13 @@
 -- must insert it yourself, since no admin exists yet to use that flow).
 --
 -- Replace the email below and run against your project (SQL editor on
--- Supabase Cloud, or `psql` / `supabase db execute` locally).
+-- Supabase Cloud, or `psql` / `supabase db execute` locally). Matching is
+-- case-insensitive: Supabase stores auth.users.email lower-cased, so an exact
+-- `=` against a capitalised address silently inserts nothing.
 
 -- 1) Ensure a profile row exists for the auth user (skip if already present):
 insert into profiles (id, full_name, role, is_active)
 select id, coalesce(raw_user_meta_data->>'full_name', email), 'admin', true
 from auth.users
-where email = 'REPLACE_WITH_FIRST_ADMIN_EMAIL@example.com'
+where lower(email) = lower('Cmarketer613@gmail.com')
 on conflict (id) do update set role = 'admin', is_active = true;

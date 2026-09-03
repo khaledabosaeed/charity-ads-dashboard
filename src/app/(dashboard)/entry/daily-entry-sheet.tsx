@@ -17,7 +17,12 @@ import type { AssociationOption } from "@/lib/data/statistics-options";
 import type { MediaBuyerOption } from "@/lib/data/report-entries";
 import { saveDailySheet, type DailySheetState } from "./actions";
 
-export type DayLine = { platformId: string; amountSpent: number; advertisingReturn: number };
+export type DayLine = {
+  platformId: string;
+  amountSpent: number;
+  advertisingReturn: number;
+  orderCount: number;
+};
 
 const ISO = /^\d{4}-\d{2}-\d{2}$/;
 
@@ -40,21 +45,23 @@ function PlatformLine({
 }: {
   name: string;
   platformId: string;
-  defaults: { spend: number; revenue: number };
+  defaults: { spend: number; revenue: number; orders: number };
   unit: string;
   onChange: (line: DayLine) => void;
 }) {
   const { dict, locale } = useI18n();
   const [spend, setSpend] = useState(String(defaults.spend || ""));
   const [revenue, setRevenue] = useState(String(defaults.revenue || ""));
+  const [orders, setOrders] = useState(String(defaults.orders || ""));
 
   const r = roas(toNumber(revenue), toNumber(spend));
 
-  function push(next: { spend?: string; revenue?: string }) {
+  function push(next: { spend?: string; revenue?: string; orders?: string }) {
     onChange({
       platformId,
       amountSpent: toNumber(next.spend ?? spend),
       advertisingReturn: toNumber(next.revenue ?? revenue),
+      orderCount: toNumber(next.orders ?? orders),
     });
   }
 
@@ -101,6 +108,24 @@ function PlatformLine({
         />
       </FormItem>
 
+      <FormItem>
+        <FormLabel htmlFor={`orders:${platformId}`}>{dict.statistics.orderCount}</FormLabel>
+        <Input
+          id={`orders:${platformId}`}
+          name={`orders:${platformId}`}
+          type="number"
+          min="0"
+          step="1"
+          inputMode="numeric"
+          placeholder="0"
+          value={orders}
+          onChange={(e) => {
+            setOrders(e.target.value);
+            push({ orders: e.target.value });
+          }}
+        />
+      </FormItem>
+
       <div className="mt-1 flex items-baseline justify-between gap-3 border-t border-line pt-3">
         <span className="annot">{dict.statistics.roas}</span>
         <span
@@ -132,6 +157,7 @@ export function DailyEntrySheet({
   buyerName,
   lines,
   currency,
+  storeSales,
 }: {
   associations: AssociationOption[];
   /** Empty for a media buyer: they can only ever file their own day. */
@@ -142,6 +168,8 @@ export function DailyEntrySheet({
   buyerName: string;
   lines: DayLine[];
   currency: string;
+  /** The store's own figures for the day — no platform, unlike `lines`. */
+  storeSales?: { orderCount: number; salesValue: number; visitCount: number };
 }) {
   const { dict, locale } = useI18n();
   const router = useRouter();
@@ -159,6 +187,7 @@ export function DailyEntrySheet({
     return (platformId: string) => ({
       spend: map.get(platformId)?.amountSpent ?? 0,
       revenue: map.get(platformId)?.advertisingReturn ?? 0,
+      orders: map.get(platformId)?.orderCount ?? 0,
     });
   }, [lines]);
 
@@ -168,6 +197,10 @@ export function DailyEntrySheet({
   const [draft, setDraft] = useState<Record<string, DayLine>>(() =>
     Object.fromEntries(lines.map((l) => [l.platformId, l]))
   );
+
+  const [storeOrderCount, setStoreOrderCount] = useState(String(storeSales?.orderCount || ""));
+  const [storeSalesValue, setStoreSalesValue] = useState(String(storeSales?.salesValue || ""));
+  const [storeVisitCount, setStoreVisitCount] = useState(String(storeSales?.visitCount || ""));
 
   useEffect(() => {
     if (state.error) toast.error(state.error);
@@ -189,11 +222,15 @@ export function DailyEntrySheet({
   }
 
   const day = platforms.map(
-    (p) => draft[p.id] ?? { platformId: p.id, amountSpent: 0, advertisingReturn: 0 }
+    (p) =>
+      draft[p.id] ?? { platformId: p.id, amountSpent: 0, advertisingReturn: 0, orderCount: 0 }
   );
   const totalSpend = day.reduce((acc, l) => acc + l.amountSpent, 0);
   const totalRevenue = day.reduce((acc, l) => acc + l.advertisingReturn, 0);
-  const activePlatforms = day.filter((l) => l.amountSpent > 0 || l.advertisingReturn > 0).length;
+  const totalOrders = day.reduce((acc, l) => acc + l.orderCount, 0);
+  const activePlatforms = day.filter(
+    (l) => l.amountSpent > 0 || l.advertisingReturn > 0 || l.orderCount > 0
+  ).length;
   const dayRoas = roas(totalRevenue, totalSpend);
   const busy = isPending || navigating;
 
@@ -283,6 +320,55 @@ export function DailyEntrySheet({
         <EmptyState message={dict.daily.noPlatforms} />
       ) : null}
 
+      {/* The store's own figures for the day — one block, no platform. */}
+      <div className="flex flex-col gap-3">
+        <RuledHeading>{dict.daily.storeSalesTitle}</RuledHeading>
+        <div className="grid grid-cols-1 gap-4 border border-line bg-paper-raised px-4 py-4 sm:grid-cols-3 sm:px-5">
+          <FormItem>
+            <FormLabel htmlFor="storeOrderCount">{dict.daily.storeOrderCount}</FormLabel>
+            <Input
+              id="storeOrderCount"
+              name="storeOrderCount"
+              type="number"
+              min="0"
+              step="1"
+              inputMode="numeric"
+              placeholder="0"
+              value={storeOrderCount}
+              onChange={(e) => setStoreOrderCount(e.target.value)}
+            />
+          </FormItem>
+          <FormItem>
+            <FormLabel htmlFor="storeSalesValue">{dict.daily.storeSalesValue}</FormLabel>
+            <Input
+              id="storeSalesValue"
+              name="storeSalesValue"
+              type="number"
+              min="0"
+              step="0.01"
+              inputMode="decimal"
+              placeholder="0"
+              value={storeSalesValue}
+              onChange={(e) => setStoreSalesValue(e.target.value)}
+            />
+          </FormItem>
+          <FormItem>
+            <FormLabel htmlFor="storeVisitCount">{dict.daily.storeVisitCount}</FormLabel>
+            <Input
+              id="storeVisitCount"
+              name="storeVisitCount"
+              type="number"
+              min="0"
+              step="1"
+              inputMode="numeric"
+              placeholder="0"
+              value={storeVisitCount}
+              onChange={(e) => setStoreVisitCount(e.target.value)}
+            />
+          </FormItem>
+        </div>
+      </div>
+
       {/* The band's selects only steer the sheet; what is filed is what the
           server drew it from. */}
       <input type="hidden" name="associationId" value={associationId} />
@@ -310,7 +396,7 @@ export function DailyEntrySheet({
 
           <div className="flex flex-col gap-3">
             <RuledHeading>{dict.daily.daySummary}</RuledHeading>
-            <DimensionGrid className="grid-cols-2 sm:grid-cols-4 lg:grid-cols-4">
+            <DimensionGrid className="grid-cols-2 sm:grid-cols-3 lg:grid-cols-5">
               <DimensionCell
                 label={dict.daily.totalSpend}
                 value={formatNumber(totalSpend)}
@@ -328,6 +414,7 @@ export function DailyEntrySheet({
                 value={formatMetric(dayRoas, (n) => `${n.toFixed(2)}×`)}
                 tone={dayRoas !== null && dayRoas >= 1 ? "datum" : "ink"}
               />
+              <DimensionCell label={dict.daily.totalOrders} value={formatCount(totalOrders)} />
               <DimensionCell
                 label={dict.daily.activePlatforms}
                 value={`${formatCount(activePlatforms)} / ${formatCount(platforms.length)}`}

@@ -20,7 +20,7 @@ upgrades), Vitest + Testing Library, Playwright.
 
 ### 1.2 Environment variables
 
-Copy `.env.local.example` to `.env.local` and fill in:
+Copy `.env.example` to `.env.local` and fill in:
 
 ```env
 NEXT_PUBLIC_SUPABASE_URL=

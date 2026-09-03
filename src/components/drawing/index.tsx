@@ -1,5 +1,6 @@
 import * as React from "react";
 import { cn } from "@/lib/utils";
+import { percentChange } from "@/lib/calculations/statistics";
 
 /* ------------------------------------------------------------------ *
  * The drawing's vocabulary. Every screen is built from these six.
@@ -58,10 +59,49 @@ export function TitleBlock({
  * A dimension string: a measured extent with tick serifs at both ends, the
  * label above it and the figure beneath. This is how every metric is annotated.
  */
+/**
+ * A period-over-period reading: how the current figure compares to the same
+ * length of time just before it. Silent (an em-dash) when there is nothing to
+ * compare against yet.
+ */
+export function TrendBadge({
+  current,
+  previous,
+  positiveIsGood = true,
+  formatter = (n) => `${Math.round(Math.abs(n) * 100)}%`,
+}: {
+  current: number;
+  previous: number | null;
+  /** Flip for cost-like metrics, where a fall is the good direction. */
+  positiveIsGood?: boolean;
+  formatter?: (change: number) => string;
+}) {
+  const change = percentChange(current, previous);
+  if (change === null) {
+    return <span className="annot figure text-ink-3">—</span>;
+  }
+
+  const rising = change > 0;
+  const good = rising === positiveIsGood;
+  const flat = change === 0;
+
+  return (
+    <span
+      className={cn(
+        "annot figure",
+        flat ? "text-ink-3" : good ? "text-datum" : "text-alarm"
+      )}
+    >
+      {flat ? "—" : rising ? "▲" : "▼"} {formatter(change)}
+    </span>
+  );
+}
+
 export function DimensionCell({
   label,
   value,
   note,
+  trend,
   tone = "ink",
   className,
   style,
@@ -69,6 +109,7 @@ export function DimensionCell({
   label: React.ReactNode;
   value: React.ReactNode;
   note?: React.ReactNode;
+  trend?: React.ReactNode;
   tone?: "ink" | "amber" | "datum" | "alarm";
   className?: string;
   style?: React.CSSProperties;
@@ -98,6 +139,7 @@ export function DimensionCell({
         {value}
       </p>
       {note ? <p className="annot mt-2 text-ink-3">{note}</p> : null}
+      {trend ? <p className="mt-1">{trend}</p> : null}
     </div>
   );
 }

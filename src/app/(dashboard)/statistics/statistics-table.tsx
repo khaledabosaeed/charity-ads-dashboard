@@ -8,6 +8,7 @@ import { EmptyState } from "@/components/layout/empty-state";
 import { formatMoney, formatCount, formatPercent, formatPeriod } from "@/lib/format";
 import {
   avgDonationValue,
+  costPerResult,
   formatMetric,
   remainingBudget,
   roas,
@@ -36,6 +37,8 @@ export function StatisticsTable({ entries }: { entries: StatisticsEntryWithRelat
           <TableHead numeric>{dict.statistics.roas}</TableHead>
           <TableHead numeric>{dict.statistics.avgDonation}</TableHead>
           <TableHead numeric>{dict.statistics.donationCount}</TableHead>
+          <TableHead numeric>{dict.statistics.resultCount}</TableHead>
+          <TableHead numeric>{dict.statistics.costPerResult}</TableHead>
           <TableHead numeric>{dict.statistics.associationReturn}</TableHead>
           <TableHead>{dict.statistics.createdBy}</TableHead>
           <TableHead>
@@ -76,6 +79,12 @@ export function StatisticsTable({ entries }: { entries: StatisticsEntryWithRelat
                 )}
               </TableCell>
               <TableCell numeric>{formatCount(e.donation_count)}</TableCell>
+              <TableCell numeric>{formatCount(e.order_count)}</TableCell>
+              <TableCell numeric>
+                {formatMetric(costPerResult(e.amount_spent, e.order_count), (n) =>
+                  formatMoney(n, e.currency_code, locale)
+                )}
+              </TableCell>
               <TableCell numeric>{formatMoney(e.association_return, e.currency_code, locale)}</TableCell>
               <TableCell className="whitespace-nowrap text-ink-2">
                 {e.author?.full_name ?? "—"}

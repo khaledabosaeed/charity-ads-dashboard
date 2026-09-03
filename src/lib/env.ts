@@ -1,7 +1,7 @@
 function required(name: string, value: string | undefined): string {
   if (!value || value.trim() === "") {
     throw new Error(
-      `Missing required environment variable "${name}". Copy .env.local.example to .env.local and fill it in.`
+      `Missing required environment variable "${name}". Copy .env.example to .env.local and fill it in.`
     );
   }
   return value;

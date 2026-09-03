@@ -6,7 +6,14 @@ const entry = (
   amount_spent: number,
   advertising_return: number,
   currency_code = "USD"
-) => ({ period_start, amount_spent, advertising_return, currency_code });
+) => ({
+  period_start,
+  amount_spent,
+  advertising_return,
+  order_count: 0,
+  donation_value: 0,
+  currency_code,
+});
 
 describe("rollup", () => {
   it("sums spend and return and counts only days with movement", () => {
@@ -17,6 +24,7 @@ describe("rollup", () => {
     ]);
     expect(r.spend).toBe(150);
     expect(r.revenue).toBe(300);
+    expect(r.orders).toBe(0);
     expect(r.roas).toBe(2);
     expect(r.activeDays).toBe(1);
     expect(r.entries).toBe(3);

@@ -18,6 +18,10 @@ export const statisticsEntrySchema = z
       .int("عدد التبرعات يجب أن يكون عددًا صحيحًا")
       .min(0, "يجب ألا يقل العدد عن صفر"),
     donationValue: money,
+    orderCount: z.coerce
+      .number({ message: "عدد صحيح مطلوب" })
+      .int("عدد الطلبات يجب أن يكون عددًا صحيحًا")
+      .min(0, "يجب ألا يقل العدد عن صفر"),
     advertisingReturn: money,
     associationReturn: money,
     notes: z.string().max(2000, "الملاحظات طويلة جدًا").optional().or(z.literal("")),

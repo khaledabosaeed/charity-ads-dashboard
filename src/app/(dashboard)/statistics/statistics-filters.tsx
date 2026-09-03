@@ -5,6 +5,7 @@ import { useI18n } from "@/i18n";
 import { Button } from "@/components/ui/button";
 import { NativeSelect } from "@/components/ui/input";
 import { DateField } from "@/components/ui/date-field";
+import { DateRangePresets } from "@/components/reports/date-range-presets";
 import type { AssociationOption } from "@/lib/data/statistics-options";
 
 /**
@@ -38,6 +39,8 @@ export function StatisticsFilters({
         <Filter className="h-3.5 w-3.5 text-ink-3" strokeWidth={1.75} aria-hidden="true" />
         <span className="annot">{dict.dashboard.filters}</span>
       </div>
+
+      <DateRangePresets searchParams={searchParams} />
 
       <div className="grid gap-4 px-4 py-4 sm:grid-cols-2 sm:px-5 lg:grid-cols-[repeat(4,minmax(0,1fr))_auto] lg:items-end">
         <div className="flex flex-col gap-1.5">

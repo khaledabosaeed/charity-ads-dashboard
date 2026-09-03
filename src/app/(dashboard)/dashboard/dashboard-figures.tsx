@@ -1,92 +1,172 @@
 "use client";
 
 import { useI18n } from "@/i18n";
-import { DimensionCell, DimensionGrid, SectionBand } from "@/components/drawing";
-import { formatCount, formatNumber, formatPercent } from "@/lib/format";
-import { formatMetric, remainingBudget, roas, spendPercentage } from "@/lib/calculations/statistics";
+import { DimensionCell, DimensionGrid, TrendBadge } from "@/components/drawing";
+import { formatCount, formatNumber } from "@/lib/format";
+import { avgDonationValue, costPerResult, formatMetric, roas } from "@/lib/calculations/statistics";
 import type { StatisticsEntryWithRelations } from "@/types/domain";
 
 function sum<T>(items: T[], pick: (item: T) => number): number {
   return items.reduce((acc, item) => acc + pick(item), 0);
 }
 
-export function DashboardFigures({ entries }: { entries: StatisticsEntryWithRelations[] }) {
+/** A tidy column count for whatever survives the empty-card filter below. */
+function colsClass(n: number): string {
+  if (n % 4 === 0) return "sm:grid-cols-2 lg:grid-cols-4";
+  if (n % 3 === 0 || n === 6) return "sm:grid-cols-3 lg:grid-cols-3";
+  if (n === 2) return "sm:grid-cols-2 lg:grid-cols-2";
+  if (n === 1) return "sm:grid-cols-1 lg:grid-cols-1";
+  return "sm:grid-cols-3 lg:grid-cols-4";
+}
+
+export function DashboardFigures({
+  entries,
+  previousEntries,
+}: {
+  entries: StatisticsEntryWithRelations[];
+  previousEntries: StatisticsEntryWithRelations[];
+}) {
   const { dict } = useI18n();
 
-  const totalBudget = sum(entries, (e) => e.budget);
   const totalSpent = sum(entries, (e) => e.amount_spent);
-  const remaining = remainingBudget(totalBudget, totalSpent);
+  const prevTotalSpent = sum(previousEntries, (e) => e.amount_spent);
 
-  const roasValues = entries
-    .map((e) => roas(e.advertising_return, e.amount_spent))
-    .filter((v): v is number => v !== null);
-  const avgRoas =
-    roasValues.length > 0 ? roasValues.reduce((a, b) => a + b, 0) / roasValues.length : null;
+  const totalReturn = sum(entries, (e) => e.advertising_return);
+  const prevTotalReturn = sum(previousEntries, (e) => e.advertising_return);
+
+  const overallRoas = roas(totalReturn, totalSpent);
+  const prevRoas = roas(prevTotalReturn, prevTotalSpent);
+
+  const resultCount = sum(entries, (e) => e.order_count);
+  const prevResultCount = sum(previousEntries, (e) => e.order_count);
+
+  const donationValue = sum(entries, (e) => e.donation_value);
+  const prevDonationValue = sum(previousEntries, (e) => e.donation_value);
+  const donationCount = sum(entries, (e) => e.donation_count);
+
+  const overallCostPerResult = costPerResult(totalSpent, resultCount);
+  const prevCostPerResult = costPerResult(prevTotalSpent, prevResultCount);
+
+  const avgResultValue = avgDonationValue(donationValue, resultCount);
+  const prevAvgResultValue = avgDonationValue(prevDonationValue, prevResultCount);
+
+  const associationReturn = sum(entries, (e) => e.association_return);
 
   /* Totals only carry a currency when every entry agrees on one. Mixed books
      are reported as bare figures rather than silently stamped with a symbol. */
   const currencies = new Set(entries.map((e) => e.currency_code));
   const unit = currencies.size === 1 ? [...currencies][0] : null;
 
-  const cells = [
+  /* The same seven readings the per-platform cards show, just totalled across
+     whatever the filters leave in scope — "all platforms" reads as one card
+     shaped exactly like the ones underneath it. A tile with nothing behind it
+     yet is dropped rather than shown as a bare "—" or 0, and reappears on its
+     own the moment that data exists. */
+  const headline = [
     {
-      label: dict.dashboard.donationCount,
-      value: formatCount(sum(entries, (e) => e.donation_count)),
-      note: undefined,
-      tone: "ink" as const,
-    },
-    {
-      label: dict.dashboard.donationValue,
-      value: formatNumber(sum(entries, (e) => e.donation_value)),
+      label: dict.statistics.amountSpent,
+      value: formatNumber(totalSpent),
       note: unit,
-      tone: "ink" as const,
+      tone: "amber" as const,
+      trend: <TrendBadge current={totalSpent} previous={prevTotalSpent} positiveIsGood={false} />,
+      hasData: totalSpent > 0,
     },
     {
-      label: dict.dashboard.advertisingReturn,
-      value: formatNumber(sum(entries, (e) => e.advertising_return)),
+      label: dict.statistics.advertisingReturn,
+      value: formatNumber(totalReturn),
       note: unit,
       tone: "datum" as const,
+      trend: <TrendBadge current={totalReturn} previous={prevTotalReturn} />,
+      hasData: totalReturn > 0,
     },
+    {
+      label: dict.statistics.costPerResult,
+      value: formatMetric(overallCostPerResult, (n) => formatNumber(n)),
+      note: unit,
+      tone: "amber" as const,
+      trend: (
+        <TrendBadge current={overallCostPerResult ?? 0} previous={prevCostPerResult} positiveIsGood={false} />
+      ),
+      hasData: overallCostPerResult !== null,
+    },
+    {
+      label: dict.statistics.resultCount,
+      value: formatCount(resultCount),
+      note: undefined,
+      tone: "ink" as const,
+      trend: <TrendBadge current={resultCount} previous={prevResultCount} />,
+      hasData: resultCount > 0,
+    },
+    {
+      label: dict.statistics.avgResultValue,
+      value: formatMetric(avgResultValue, (n) => formatNumber(n)),
+      note: unit,
+      tone: "ink" as const,
+      trend: <TrendBadge current={avgResultValue ?? 0} previous={prevAvgResultValue} />,
+      hasData: avgResultValue !== null,
+    },
+    {
+      label: dict.statistics.donationsPixel,
+      value: formatNumber(donationValue),
+      note: `${unit ? `${unit} · ` : ""}${formatCount(donationCount)} ${dict.dashboard.donationCount}`,
+      tone: "datum" as const,
+      trend: <TrendBadge current={donationValue} previous={prevDonationValue} />,
+      hasData: donationValue > 0 || donationCount > 0,
+    },
+    {
+      label: dict.statistics.roas,
+      value: formatMetric(overallRoas, (n) => `${n.toFixed(2)}×`),
+      note: undefined,
+      tone: overallRoas !== null && overallRoas >= 1 ? ("datum" as const) : ("ink" as const),
+      trend: <TrendBadge current={overallRoas ?? 0} previous={prevRoas} />,
+      hasData: overallRoas !== null,
+    },
+  ].filter((c) => c.hasData);
+
+  const secondary = [
     {
       label: dict.dashboard.associationReturn,
-      value: formatNumber(sum(entries, (e) => e.association_return)),
+      value: formatNumber(associationReturn),
       note: unit,
       tone: "datum" as const,
-    },
-    {
-      label: dict.dashboard.avgRoas,
-      value: formatMetric(avgRoas, (n) => `${n.toFixed(2)}×`),
-      note: undefined,
-      tone: avgRoas !== null && avgRoas >= 1 ? ("datum" as const) : ("ink" as const),
+      hasData: associationReturn > 0,
     },
     {
       label: dict.dashboard.entriesCounted,
       value: formatCount(entries.length),
       note: undefined,
       tone: "ink" as const,
+      hasData: true,
     },
-  ];
+  ].filter((c) => c.hasData);
 
   return (
     <div className="flex flex-col gap-4">
-      <SectionBand
-        budgetLabel={dict.dashboard.totalBudget}
-        budgetValue={unit ? `${formatNumber(totalBudget)} ${unit}` : formatNumber(totalBudget)}
-        spentLabel={dict.dashboard.totalSpent}
-        spentValue={formatNumber(totalSpent)}
-        remainingLabel={dict.dashboard.remainingBudget}
-        remainingValue={formatNumber(Math.abs(remaining))}
-        overrunLabel={dict.dashboard.overrun}
-        budget={totalBudget}
-        spent={totalSpent}
-        percentText={`${formatPercent(spendPercentage(totalBudget, totalSpent))} ${dict.dashboard.spendReading}`}
-      />
+      {headline.length > 0 ? (
+        <DimensionGrid className={colsClass(headline.length)}>
+          {headline.map((c) => (
+            <DimensionCell
+              key={c.label}
+              label={c.label}
+              value={c.value}
+              note={c.note}
+              tone={c.tone}
+              trend={c.trend}
+            />
+          ))}
+        </DimensionGrid>
+      ) : null}
 
-      <DimensionGrid className="sm:grid-cols-3 lg:grid-cols-6">
-        {cells.map((c) => (
-          <DimensionCell key={c.label} label={c.label} value={c.value} note={c.note} tone={c.tone} />
-        ))}
-      </DimensionGrid>
+      {/* The budget-vs-spend band is hidden for now: most entries carry no
+          budget yet, which drew every sheet as a false "over budget" alarm. */}
+
+      {secondary.length > 0 ? (
+        <DimensionGrid className={colsClass(secondary.length)}>
+          {secondary.map((c) => (
+            <DimensionCell key={c.label} label={c.label} value={c.value} note={c.note} tone={c.tone} />
+          ))}
+        </DimensionGrid>
+      ) : null}
     </div>
   );
 }

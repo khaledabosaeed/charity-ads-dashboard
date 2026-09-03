@@ -14,7 +14,12 @@ export type DailySheetState = {
 
 /** The sheet posts one pair of fields per platform: `spend:<id>` / `revenue:<id>`. */
 function readRows(formData: FormData) {
-  const rows: { platformId: string; amountSpent: unknown; advertisingReturn: unknown }[] = [];
+  const rows: {
+    platformId: string;
+    amountSpent: unknown;
+    advertisingReturn: unknown;
+    orderCount: unknown;
+  }[] = [];
   for (const [key, value] of formData.entries()) {
     if (!key.startsWith("spend:")) continue;
     const platformId = key.slice("spend:".length);
@@ -22,6 +27,7 @@ function readRows(formData: FormData) {
       platformId,
       amountSpent: value === "" ? 0 : value,
       advertisingReturn: (formData.get(`revenue:${platformId}`) || 0) as unknown,
+      orderCount: (formData.get(`orders:${platformId}`) || 0) as unknown,
     });
   }
   return rows;
@@ -52,11 +58,15 @@ export async function saveDailySheet(
     associationId: formData.get("associationId"),
     currencyCode: formData.get("currencyCode"),
     rows: readRows(formData),
+    storeOrderCount: formData.get("storeOrderCount") || 0,
+    storeSalesValue: formData.get("storeSalesValue") || 0,
+    storeVisitCount: formData.get("storeVisitCount") || 0,
   });
 
   if (!parsed.success) return { error: parsed.error.issues[0]?.message ?? "تعذّر حفظ اليوم" };
 
-  const { date, associationId, currencyCode, rows } = parsed.data;
+  const { date, associationId, currencyCode, rows, storeOrderCount, storeSalesValue, storeVisitCount } =
+    parsed.data;
 
   /* An admin may file a day on a media buyer's behalf — the band lets them pick
      one. Anyone else files their own day, whatever the form claims. */
@@ -77,26 +87,62 @@ export async function saveDailySheet(
 
   const recorded = new Set((existing ?? []).map((e) => e.platform_id));
   const writable = rows.filter(
-    (r) => r.amountSpent > 0 || r.advertisingReturn > 0 || recorded.has(r.platformId)
+    (r) =>
+      r.amountSpent > 0 || r.advertisingReturn > 0 || r.orderCount > 0 || recorded.has(r.platformId)
   );
 
-  if (writable.length === 0) return { error: "لا توجد أرقام لحفظها في هذا اليوم" };
+  const { data: existingStoreSales } = await supabase
+    .from("store_sales_entries")
+    .select("id")
+    .eq("association_id", associationId)
+    .eq("created_by", filedBy)
+    .eq("period_start", date)
+    .eq("period_end", date)
+    .maybeSingle();
 
-  const { error } = await supabase.from("statistics_entries").upsert(
-    writable.map((r) => ({
-      association_id: associationId,
-      platform_id: r.platformId,
-      created_by: filedBy,
-      period_start: date,
-      period_end: date,
-      currency_code: currencyCode,
-      amount_spent: r.amountSpent,
-      advertising_return: r.advertisingReturn,
-    })),
-    { onConflict: "association_id,platform_id,created_by,period_start,period_end" }
-  );
+  const writeStoreSales =
+    storeOrderCount > 0 || storeSalesValue > 0 || storeVisitCount > 0 || Boolean(existingStoreSales);
 
-  if (error) return { error: mapDbError(error.message) };
+  if (writable.length === 0 && !writeStoreSales) {
+    return { error: "لا توجد أرقام لحفظها في هذا اليوم" };
+  }
+
+  if (writable.length > 0) {
+    const { error } = await supabase.from("statistics_entries").upsert(
+      writable.map((r) => ({
+        association_id: associationId,
+        platform_id: r.platformId,
+        created_by: filedBy,
+        period_start: date,
+        period_end: date,
+        currency_code: currencyCode,
+        amount_spent: r.amountSpent,
+        advertising_return: r.advertisingReturn,
+        order_count: r.orderCount,
+      })),
+      { onConflict: "association_id,platform_id,created_by,period_start,period_end" }
+    );
+
+    if (error) return { error: mapDbError(error.message) };
+  }
+
+  if (writeStoreSales) {
+    const { error } = await supabase.from("store_sales_entries").upsert(
+      {
+        association_id: associationId,
+        created_by: filedBy,
+        period_start: date,
+        period_end: date,
+        currency_code: currencyCode,
+        order_count: storeOrderCount,
+        sales_value: storeSalesValue,
+        visit_count: storeVisitCount,
+      },
+      { onConflict: "association_id,created_by,period_start,period_end" }
+    );
+
+    if (error) return { error: mapDbError(error.message) };
+  }
 
   revalidatePath("/entry");
   revalidatePath("/daily");
@@ -105,5 +151,5 @@ export async function saveDailySheet(
   revalidatePath("/dashboard");
   revalidatePath("/statistics");
 
-  return { saved: writable.length, at: Date.now() };
+  return { saved: writable.length + (writeStoreSales ? 1 : 0), at: Date.now() };
 }
