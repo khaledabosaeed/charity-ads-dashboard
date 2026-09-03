@@ -1,5 +1,6 @@
 import type { Database } from "@/types/database.types";
 
+export type UserRole = Database["public"]["Enums"]["user_role"];
 export type Profile = Database["public"]["Tables"]["profiles"]["Row"];
 export type Association = Database["public"]["Tables"]["associations"]["Row"];
 export type Platform = Database["public"]["Tables"]["platforms"]["Row"];

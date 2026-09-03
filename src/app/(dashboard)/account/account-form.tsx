@@ -8,7 +8,7 @@ import { Input } from "@/components/ui/input";
 import { FormError, FormItem, FormLabel } from "@/components/forms/field";
 import { RuledHeading } from "@/components/drawing";
 import { updateAccount, type AccountState } from "./actions";
-import type { UserRole } from "@/types/database.types";
+import type { UserRole } from "@/types/domain";
 
 /** Your own plate on the title block: the address you sign in with, and the key. */
 export function AccountForm({

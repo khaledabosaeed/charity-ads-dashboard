@@ -14,7 +14,7 @@ import {
 } from "lucide-react";
 import { useI18n } from "@/i18n";
 import { cn } from "@/lib/utils";
-import type { UserRole } from "@/types/database.types";
+import type { UserRole } from "@/types/domain";
 
 /**
  * Two jobs, two rails. A media buyer's day runs entry → today's report →

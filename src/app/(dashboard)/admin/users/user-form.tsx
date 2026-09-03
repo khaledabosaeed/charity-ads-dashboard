@@ -8,8 +8,7 @@ import { Input, NativeSelect } from "@/components/ui/input";
 import { FormError, FormItem, FormLabel } from "@/components/forms/field";
 import { RuledHeading } from "@/components/drawing";
 import type { ActionState } from "../associations/actions";
-import type { Association, Profile } from "@/types/domain";
-import type { UserRole } from "@/types/database.types";
+import type { Association, Profile, UserRole } from "@/types/domain";
 
 /**
  * One form for both accounts an admin can open: a media buyer, who is assigned
