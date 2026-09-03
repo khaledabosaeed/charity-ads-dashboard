@@ -8,7 +8,8 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { EmptyState } from "@/components/layout/empty-state";
-import { toggleAssociationActive } from "./actions";
+import { ConfirmDeleteDialog } from "@/components/dialogs/confirm-delete-dialog";
+import { deleteAssociation, toggleAssociationActive } from "./actions";
 import type { Association } from "@/types/domain";
 
 export function AssociationsTable({ associations }: { associations: Association[] }) {
@@ -54,6 +55,23 @@ export function AssociationsTable({ associations }: { associations: Association[
               >
                 {a.is_active ? dict.common.deactivate : dict.common.activate}
               </Button>
+              <ConfirmDeleteDialog
+                title={dict.common.confirmDeleteTitle}
+                description={dict.associations.confirmDeleteBody}
+                disabled={isPending}
+                trigger={
+                  <Button size="sm" variant="destructive" disabled={isPending}>
+                    {dict.common.delete}
+                  </Button>
+                }
+                onConfirm={() =>
+                  startTransition(async () => {
+                    const result = await deleteAssociation(a.id);
+                    if (result?.error) toast.error(result.error);
+                    else toast.success(dict.common.savedSuccessfully);
+                  })
+                }
+              />
             </TableCell>
           </TableRow>
         ))}

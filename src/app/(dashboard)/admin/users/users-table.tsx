@@ -8,7 +8,8 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { EmptyState } from "@/components/layout/empty-state";
-import { toggleUserActive } from "./actions";
+import { ConfirmDeleteDialog } from "@/components/dialogs/confirm-delete-dialog";
+import { deleteUser, toggleUserActive } from "./actions";
 import type { Profile } from "@/types/domain";
 
 export type UserRow = Profile & { email: string };
@@ -68,6 +69,27 @@ export function UsersTable({ users, currentUserId }: { users: UserRow[]; current
               >
                 {user.is_active ? dict.common.deactivate : dict.common.activate}
               </Button>
+              <ConfirmDeleteDialog
+                title={dict.common.confirmDeleteTitle}
+                description={dict.users.confirmDeleteBody}
+                disabled={isPending || user.id === currentUserId}
+                trigger={
+                  <Button
+                    size="sm"
+                    variant="destructive"
+                    disabled={isPending || user.id === currentUserId}
+                  >
+                    {dict.common.delete}
+                  </Button>
+                }
+                onConfirm={() =>
+                  startTransition(async () => {
+                    const result = await deleteUser(user.id);
+                    if (result?.error) toast.error(result.error);
+                    else toast.success(dict.common.savedSuccessfully);
+                  })
+                }
+              />
             </TableCell>
           </TableRow>
         ))}

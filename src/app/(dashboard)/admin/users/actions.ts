@@ -155,6 +155,30 @@ export async function updateUser(
   return {};
 }
 
+/**
+ * Permanently removes the user. Goes through the auth admin API (not a raw
+ * `profiles` delete) so the `auth.users` row goes with it — `profiles.id`
+ * cascades from that, and from there the FK cascade set up in migration
+ * 20260101000011 removes everything the profile authored.
+ */
+export async function deleteUser(id: string): Promise<ActionState> {
+  const admin = await requireAdmin();
+
+  if (admin.id === id) return { error: "لا يمكنك حذف حسابك" };
+  if (await wouldStrandTheAccount(id, false, false)) {
+    return { error: "لا يمكن حذف آخر مشرف فعّال" };
+  }
+
+  const adminClient = createAdminClient();
+  const { error } = await adminClient.auth.admin.deleteUser(id);
+  if (error) return { error: error.message };
+
+  revalidatePath("/admin/users");
+  revalidatePath("/statistics");
+  revalidatePath("/dashboard");
+  return {};
+}
+
 export async function toggleUserActive(id: string, isActive: boolean): Promise<ActionState> {
   const admin = await requireAdmin();
 

@@ -173,6 +173,8 @@ const en: Dictionary = {
     status: "Status",
     platformsLinked: "Linked Platforms",
     mediaBuyersLinked: "Linked Media Buyers",
+    confirmDeleteBody:
+      "This permanently deletes the association and every statistics and store-sales entry filed against it. This cannot be undone.",
   },
   users: {
     title: "Users",
@@ -193,6 +195,8 @@ const en: Dictionary = {
     you: "(you)",
     account: "My account",
     emailPending: "A confirmation link was sent to the new address",
+    confirmDeleteBody:
+      "This permanently deletes the user and everything they filed (statistics, store sales). This cannot be undone.",
   },
   platforms: {
     title: "Ad Platforms",

@@ -171,6 +171,7 @@ export interface Dictionary {
     status: string;
     platformsLinked: string;
     mediaBuyersLinked: string;
+    confirmDeleteBody: string;
   };
   users: {
     title: string;
@@ -191,6 +192,7 @@ export interface Dictionary {
     you: string;
     account: string;
     emailPending: string;
+    confirmDeleteBody: string;
   };
   platforms: {
     title: string;

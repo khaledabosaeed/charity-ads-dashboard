@@ -78,6 +78,23 @@ export async function toggleAssociationActive(id: string, isActive: boolean) {
   revalidatePath("/admin/associations");
 }
 
+/**
+ * Permanently removes the association and, per the FK cascade set up in
+ * migration 20260101000011, every statistics/store-sales entry and
+ * platform/media-buyer link filed against it.
+ */
+export async function deleteAssociation(id: string): Promise<ActionState> {
+  await requireAdmin();
+  const supabase = await createClient();
+  const { error } = await supabase.from("associations").delete().eq("id", id);
+  if (error) return { error: error.message };
+
+  revalidatePath("/admin/associations");
+  revalidatePath("/statistics");
+  revalidatePath("/dashboard");
+  return {};
+}
+
 export async function setAssociationPlatforms(associationId: string, platformIds: string[]) {
   await requireAdmin();
   const supabase = await createClient();
