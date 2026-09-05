@@ -10,10 +10,10 @@ export function spendPercentage(budget: number, amountSpent: number): number {
   return (amountSpent / budget) * 100;
 }
 
-/** Return on ad spend. Returns null when amountSpent is 0 (undefined ratio). */
-export function roas(advertisingReturn: number, amountSpent: number): number | null {
+/** Return on spend. Returns null when amountSpent is 0 (undefined ratio). */
+export function roas(revenue: number, amountSpent: number): number | null {
   if (amountSpent <= 0) return null;
-  return advertisingReturn / amountSpent;
+  return revenue / amountSpent;
 }
 
 /** Average donation value. Returns null when donationCount is 0. */

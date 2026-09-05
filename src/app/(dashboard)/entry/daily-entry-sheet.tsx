@@ -216,7 +216,7 @@ export function DailyEntrySheet({
   const totalSpend = day.reduce((acc, l) => acc + l.amountSpent, 0);
   const totalRevenue = day.reduce((acc, l) => acc + l.advertisingReturn, 0);
   const totalOrders = day.reduce((acc, l) => acc + l.orderCount, 0);
-  const dayRoas = roas(totalRevenue, totalSpend);
+  const dayRoas = roas(toNumber(associationReturn), totalSpend);
   const busy = isPending || navigating;
 
   return (

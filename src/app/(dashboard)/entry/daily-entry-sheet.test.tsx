@@ -63,9 +63,11 @@ describe("DailyEntrySheet", () => {
 
     await user.type(screen.getAllByLabelText(ar.statistics.amountSpent)[0], "100");
     await user.type(screen.getAllByLabelText(ar.statistics.advertisingReturn)[0], "250");
+    await user.type(screen.getByLabelText(ar.statistics.associationReturn), "150");
 
-    /* the platform line's own reading, and the day's */
-    expect(screen.getAllByText("2.50×")).toHaveLength(2);
+    /* the platform line still reads advertising return; the day's ROAS reads association return */
+    expect(screen.getByText("2.50×")).toBeInTheDocument();
+    expect(screen.getByText("1.50×")).toBeInTheDocument();
     expect(screen.getByText(`1 / 2`)).toBeInTheDocument();
   });
 

@@ -23,11 +23,13 @@ export function DashboardFigures({
   entries,
   previousEntries,
   associationReturn,
+  previousAssociationReturn,
 }: {
   entries: StatisticsEntryWithRelations[];
   previousEntries: StatisticsEntryWithRelations[];
   /** Day-level association return, already totalled for the current extent. */
   associationReturn: number;
+  previousAssociationReturn: number;
 }) {
   const { dict, locale } = useI18n();
 
@@ -37,8 +39,8 @@ export function DashboardFigures({
   const totalReturn = sum(entries, (e) => e.advertising_return);
   const prevTotalReturn = sum(previousEntries, (e) => e.advertising_return);
 
-  const overallRoas = roas(totalReturn, totalSpent);
-  const prevRoas = roas(prevTotalReturn, prevTotalSpent);
+  const overallRoas = roas(associationReturn, totalSpent);
+  const prevRoas = roas(previousAssociationReturn, prevTotalSpent);
 
   const resultCount = sum(entries, (e) => e.order_count);
   const prevResultCount = sum(previousEntries, (e) => e.order_count);

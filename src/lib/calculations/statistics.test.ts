@@ -33,7 +33,7 @@ describe("spendPercentage", () => {
 });
 
 describe("roas", () => {
-  it("computes advertising return over spend", () => {
+  it("computes return over spend", () => {
     expect(roas(500, 100)).toBe(5);
   });
 

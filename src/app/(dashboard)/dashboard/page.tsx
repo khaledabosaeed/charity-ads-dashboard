@@ -1,6 +1,6 @@
 import { createClient } from "@/lib/supabase/server";
 import { getAvailableAssociationsWithPlatforms } from "@/lib/data/statistics-options";
-import { getAssociationReturnTotal } from "@/lib/data/report-entries";
+import { getAssociationReturnTotal, resolveAssociationReturn } from "@/lib/data/report-entries";
 import { previousPeriod } from "@/lib/dates/presets";
 import { rollupBy, unifiedCurrency } from "@/lib/calculations/rollup";
 import { withDisplayPlatformName } from "@/lib/format";
@@ -46,7 +46,7 @@ export default async function DashboardPage({
      mirror, so the previous period is simply left empty. */
   const previous = params.from && params.to ? previousPeriod(params.from, params.to) : undefined;
 
-  const [entries, previousEntries, associations, salesReturn] = await Promise.all([
+  const [entries, previousEntries, associations, salesReturn, previousSalesReturn] = await Promise.all([
     fetchEntries(params.from, params.to),
     previous ? fetchEntries(previous.from, previous.to) : Promise.resolve([]),
     getAvailableAssociationsWithPlatforms(),
@@ -55,13 +55,17 @@ export default async function DashboardPage({
       from: params.from,
       to: params.to,
     }),
+    previous
+      ? getAssociationReturnTotal({
+          associationId: params.associationId,
+          from: previous.from,
+          to: previous.to,
+        })
+      : Promise.resolve(0),
   ]);
 
-  /* The day sheet writes association return once per day on store_sales_entries.
-     Older statistics rows still carry their own copy — use that only when the
-     day-level figure has not been filed yet. */
-  const legacyReturn = entries.reduce((acc, e) => acc + e.association_return, 0);
-  const associationReturn = salesReturn > 0 ? salesReturn : legacyReturn;
+  const associationReturn = resolveAssociationReturn(salesReturn, entries);
+  const previousAssociationReturn = resolveAssociationReturn(previousSalesReturn, previousEntries);
 
   const latest = [...entries].reverse().slice(0, 10);
 
@@ -102,6 +106,7 @@ export default async function DashboardPage({
             entries={entries}
             previousEntries={previousEntries}
             associationReturn={associationReturn}
+            previousAssociationReturn={previousAssociationReturn}
           />
 
           {entries.length > 0 ? (

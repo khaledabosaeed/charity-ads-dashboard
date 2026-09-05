@@ -14,10 +14,17 @@ import { cn } from "@/lib/utils";
 import type { StatisticsEntryWithRelations } from "@/types/domain";
 
 /** The day's reading, then the day's lines. Newest day at the top. */
-export function DailyReport({ entries }: { entries: StatisticsEntryWithRelations[] }) {
+export function DailyReport({
+  entries,
+  associationReturn,
+}: {
+  entries: StatisticsEntryWithRelations[];
+  associationReturn: number;
+}) {
   const { dict, locale } = useI18n();
 
   const totals = rollup(entries);
+  const overallRoas = roas(associationReturn, totals.spend);
   const unit = unifiedCurrency(entries);
   const rows = [...entries].reverse();
 
@@ -38,8 +45,8 @@ export function DailyReport({ entries }: { entries: StatisticsEntryWithRelations
         />
         <DimensionCell
           label={dict.daily.overallRoas}
-          value={formatMetric(totals.roas, (n) => `${n.toFixed(2)}×`)}
-          tone={totals.roas !== null && totals.roas >= 1 ? "datum" : "ink"}
+          value={formatMetric(overallRoas, (n) => `${n.toFixed(2)}×`)}
+          tone={overallRoas !== null && overallRoas >= 1 ? "datum" : "ink"}
         />
         <DimensionCell label={dict.daily.entriesCount} value={formatCount(totals.entries)} />
       </DimensionGrid>

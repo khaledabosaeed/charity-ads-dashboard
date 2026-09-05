@@ -1,9 +1,11 @@
 import { requireActiveUser } from "@/lib/auth/session";
 import { getAvailableAssociationsWithPlatforms } from "@/lib/data/statistics-options";
 import {
+  getAssociationReturnTotal,
   getMediaBuyerOptions,
   getReportEntries,
   readReportFilters,
+  resolveAssociationReturn,
 } from "@/lib/data/report-entries";
 import { formatPeriod } from "@/lib/format";
 import { PageHeading } from "@/components/layout/page-heading";
@@ -21,11 +23,14 @@ export default async function DailyReportPage({
   const profile = await requireActiveUser();
   const filters = readReportFilters(params, { defaultToToday: true });
 
-  const [entries, associations, mediaBuyers] = await Promise.all([
+  const [entries, associations, mediaBuyers, salesReturn] = await Promise.all([
     getReportEntries(filters),
     getAvailableAssociationsWithPlatforms(),
     profile.role === "admin" ? getMediaBuyerOptions() : Promise.resolve([]),
+    getAssociationReturnTotal(filters),
   ]);
+
+  const associationReturn = resolveAssociationReturn(salesReturn, entries);
 
   return (
     <>
@@ -35,7 +40,7 @@ export default async function DailyReportPage({
         action={<NewLinkButton href="/entry" labelKey="daily.entryTitle" />}
       />
       <ReportFilters associations={associations} mediaBuyers={mediaBuyers} filters={filters} />
-      <DailyReport entries={entries} />
+      <DailyReport entries={entries} associationReturn={associationReturn} />
     </>
   );
 }

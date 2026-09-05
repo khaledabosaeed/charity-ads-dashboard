@@ -78,6 +78,18 @@ export async function getAssociationReturnTotal(filters: ReportFilters): Promise
   return (data ?? []).reduce((acc, row) => acc + row.association_return, 0);
 }
 
+/**
+ * Prefer the day-level store-sales figure. Older statistics rows still carry
+ * their own copy — use that only when the day-level figure has not been filed.
+ */
+export function resolveAssociationReturn(
+  salesReturn: number,
+  entries: { association_return: number }[]
+): number {
+  if (salesReturn > 0) return salesReturn;
+  return entries.reduce((acc, e) => acc + e.association_return, 0);
+}
+
 export type MediaBuyerOption = { id: string; name: string };
 
 /**
