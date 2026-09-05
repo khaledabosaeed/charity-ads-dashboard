@@ -1,6 +1,7 @@
 import { notFound } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
 import { getCurrentProfile } from "@/lib/auth/session";
+import { displayPlatformName, withDisplayPlatformName } from "@/lib/format";
 import { PageHeading } from "@/components/layout/page-heading";
 import { AssociationDetail } from "./association-detail";
 import type { StatisticsEntryWithRelations } from "@/types/domain";
@@ -43,11 +44,14 @@ export default async function AssociationDetailPage({
           (platforms ?? []) as unknown as { platform: { id: string; name: string } | null }[]
         )
           .map((p) => p.platform)
-          .filter((p): p is { id: string; name: string } => Boolean(p))}
+          .filter((p): p is { id: string; name: string } => Boolean(p))
+          .map((p) => ({ ...p, name: displayPlatformName(p.name) }))}
         mediaBuyers={(mediaBuyersResult.data ?? [])
           .map((m) => (m as unknown as { media_buyer: { id: string; full_name: string } | null }).media_buyer)
           .filter((m): m is { id: string; full_name: string } => Boolean(m))}
-        entries={(entries as unknown as StatisticsEntryWithRelations[]) ?? []}
+        entries={((entries as unknown as StatisticsEntryWithRelations[]) ?? []).map(
+          withDisplayPlatformName
+        )}
         isAdmin={profile?.role === "admin"}
       />
     </div>

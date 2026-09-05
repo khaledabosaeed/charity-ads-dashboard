@@ -7,6 +7,7 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { EmptyState } from "@/components/layout/empty-state";
+import { displayPlatformName } from "@/lib/format";
 import { togglePlatformActive } from "./actions";
 import type { Platform } from "@/types/domain";
 
@@ -29,7 +30,7 @@ export function PlatformsTable({ platforms }: { platforms: Platform[] }) {
       <TableBody>
         {platforms.map((p) => (
           <TableRow key={p.id}>
-            <TableCell className="font-medium">{p.name}</TableCell>
+            <TableCell className="font-medium">{displayPlatformName(p.name)}</TableCell>
             <TableCell className="figure text-[0.6875rem] text-ink-2">{p.slug}</TableCell>
             <TableCell>
               <Badge variant={p.is_active ? "success" : "muted"}>

@@ -1,6 +1,7 @@
 import { describe, expect, it } from "vitest";
 import {
   avgDonationValue,
+  avgResultValue,
   formatMetric,
   remainingBudget,
   roas,
@@ -48,6 +49,16 @@ describe("avgDonationValue", () => {
 
   it("returns null when donation count is 0", () => {
     expect(avgDonationValue(0, 0)).toBeNull();
+  });
+});
+
+describe("avgResultValue", () => {
+  it("computes advertising return over orders", () => {
+    expect(avgResultValue(11743, 120)).toBeCloseTo(97.8583);
+  });
+
+  it("returns null when there are no orders", () => {
+    expect(avgResultValue(500, 0)).toBeNull();
   });
 });
 

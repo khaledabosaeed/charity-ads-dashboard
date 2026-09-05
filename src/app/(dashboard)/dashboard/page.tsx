@@ -3,6 +3,7 @@ import { getAvailableAssociationsWithPlatforms } from "@/lib/data/statistics-opt
 import { getAssociationReturnTotal } from "@/lib/data/report-entries";
 import { previousPeriod } from "@/lib/dates/presets";
 import { rollupBy, unifiedCurrency } from "@/lib/calculations/rollup";
+import { withDisplayPlatformName } from "@/lib/format";
 import { PageHeading } from "@/components/layout/page-heading";
 import { RuledHeading } from "@/components/drawing";
 import { StatisticsFilters } from "@/app/(dashboard)/statistics/statistics-filters";
@@ -37,7 +38,7 @@ export default async function DashboardPage({
     if (to) query = query.lte("period_end", to);
 
     const { data } = await query;
-    return (data as unknown as StatisticsEntryWithRelations[]) ?? [];
+    return ((data as unknown as StatisticsEntryWithRelations[]) ?? []).map(withDisplayPlatformName);
   }
 
   /* The comparison badges need the equivalent stretch of time right before the

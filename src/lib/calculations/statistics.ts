@@ -22,6 +22,12 @@ export function avgDonationValue(donationValue: number, donationCount: number): 
   return donationValue / donationCount;
 }
 
+/** Average value per result (AOV). Returns null when there are no orders. */
+export function avgResultValue(advertisingReturn: number, orderCount: number): number | null {
+  if (orderCount <= 0) return null;
+  return advertisingReturn / orderCount;
+}
+
 /** Cost per result (order). Returns null when amountSpent or orderCount is 0. */
 export function costPerResult(amountSpent: number, orderCount: number): number | null {
   if (amountSpent <= 0 || orderCount <= 0) return null;

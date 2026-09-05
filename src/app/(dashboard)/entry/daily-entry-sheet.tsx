@@ -216,9 +216,6 @@ export function DailyEntrySheet({
   const totalSpend = day.reduce((acc, l) => acc + l.amountSpent, 0);
   const totalRevenue = day.reduce((acc, l) => acc + l.advertisingReturn, 0);
   const totalOrders = day.reduce((acc, l) => acc + l.orderCount, 0);
-  const activePlatforms = day.filter(
-    (l) => l.amountSpent > 0 || l.advertisingReturn > 0 || l.orderCount > 0
-  ).length;
   const dayRoas = roas(totalRevenue, totalSpend);
   const busy = isPending || navigating;
 
@@ -368,10 +365,6 @@ export function DailyEntrySheet({
                 tone={dayRoas !== null && dayRoas >= 1 ? "datum" : "ink"}
               />
               <DimensionCell label={dict.daily.totalOrders} value={formatCount(totalOrders)} />
-              <DimensionCell
-                label={dict.daily.activePlatforms}
-                value={`${formatCount(activePlatforms)} / ${formatCount(platforms.length)}`}
-              />
               <DimensionCell
                 label={dict.statistics.associationReturn}
                 value={formatNumber(toNumber(associationReturn))}

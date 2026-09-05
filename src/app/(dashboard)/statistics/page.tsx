@@ -4,6 +4,7 @@ import { PageHeading } from "@/components/layout/page-heading";
 import { NewLinkButton } from "@/components/layout/new-link-button";
 import { StatisticsFilters } from "./statistics-filters";
 import { StatisticsTable } from "./statistics-table";
+import { withDisplayPlatformName } from "@/lib/format";
 import type { StatisticsEntryWithRelations } from "@/types/domain";
 
 export default async function StatisticsPage({
@@ -36,7 +37,11 @@ export default async function StatisticsPage({
         action={<NewLinkButton href="/statistics/new" labelKey="statistics.new" />}
       />
       <StatisticsFilters associations={associations} searchParams={params} />
-      <StatisticsTable entries={(entries as unknown as StatisticsEntryWithRelations[]) ?? []} />
+      <StatisticsTable
+        entries={((entries as unknown as StatisticsEntryWithRelations[]) ?? []).map(
+          withDisplayPlatformName
+        )}
+      />
     </div>
   );
 }

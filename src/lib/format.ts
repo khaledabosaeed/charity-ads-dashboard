@@ -11,8 +11,28 @@ const CURRENCY_MARK: Record<string, Record<Locale, string>> = {
   SAR: { ar: "ر.س", en: "SAR" },
 };
 
+/** The books are riyals. Leftover USD labels are the old default, not dollars. */
+export function displayCurrencyCode(currency: string): string {
+  return currency === "USD" ? "SAR" : currency;
+}
+
 export function currencyMark(currency: string, locale: Locale = "en"): string {
-  return CURRENCY_MARK[currency]?.[locale] ?? currency;
+  return CURRENCY_MARK[displayCurrencyCode(currency)]?.[locale] ?? displayCurrencyCode(currency);
+}
+
+/** Shorten the seeded Meta label so cards and filters read as a platform, not a parenthetical. */
+export function displayPlatformName(name: string): string {
+  return name === "Meta Ads (Facebook & Instagram)" ? "Meta Ads" : name;
+}
+
+export function withDisplayPlatformName<
+  T extends { platform: { id: string; name: string } | null },
+>(entry: T): T {
+  if (!entry.platform) return entry;
+  return {
+    ...entry,
+    platform: { ...entry.platform, name: displayPlatformName(entry.platform.name) },
+  };
 }
 
 export function formatNumber(n: number, maximumFractionDigits = 2): string {

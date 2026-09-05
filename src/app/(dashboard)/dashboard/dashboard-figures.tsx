@@ -2,8 +2,8 @@
 
 import { useI18n } from "@/i18n";
 import { DimensionCell, DimensionGrid, TrendBadge } from "@/components/drawing";
-import { formatCount, formatNumber } from "@/lib/format";
-import { avgDonationValue, costPerResult, formatMetric, roas } from "@/lib/calculations/statistics";
+import { currencyMark, formatCount, formatNumber } from "@/lib/format";
+import { avgResultValue, costPerResult, formatMetric, roas } from "@/lib/calculations/statistics";
 import type { StatisticsEntryWithRelations } from "@/types/domain";
 
 function sum<T>(items: T[], pick: (item: T) => number): number {
@@ -29,7 +29,7 @@ export function DashboardFigures({
   /** Day-level association return, already totalled for the current extent. */
   associationReturn: number;
 }) {
-  const { dict } = useI18n();
+  const { dict, locale } = useI18n();
 
   const totalSpent = sum(entries, (e) => e.amount_spent);
   const prevTotalSpent = sum(previousEntries, (e) => e.amount_spent);
@@ -43,15 +43,11 @@ export function DashboardFigures({
   const resultCount = sum(entries, (e) => e.order_count);
   const prevResultCount = sum(previousEntries, (e) => e.order_count);
 
-  const donationValue = sum(entries, (e) => e.donation_value);
-  const prevDonationValue = sum(previousEntries, (e) => e.donation_value);
-  const donationCount = sum(entries, (e) => e.donation_count);
-
   const overallCostPerResult = costPerResult(totalSpent, resultCount);
   const prevCostPerResult = costPerResult(prevTotalSpent, prevResultCount);
 
-  const avgResultValue = avgDonationValue(donationValue, resultCount);
-  const prevAvgResultValue = avgDonationValue(prevDonationValue, prevResultCount);
+  const averageResultValue = avgResultValue(totalReturn, resultCount);
+  const prevAverageResultValue = avgResultValue(prevTotalReturn, prevResultCount);
 
   /* Totals only carry a currency when every entry agrees on one. Mixed books
      are reported as bare figures rather than silently stamped with a symbol. */
@@ -67,7 +63,7 @@ export function DashboardFigures({
     {
       label: dict.statistics.amountSpent,
       value: formatNumber(totalSpent),
-      note: unit,
+      note: unit ? currencyMark(unit, locale) : unit,
       tone: "amber" as const,
       trend: <TrendBadge current={totalSpent} previous={prevTotalSpent} positiveIsGood={false} />,
       hasData: totalSpent > 0,
@@ -75,7 +71,7 @@ export function DashboardFigures({
     {
       label: dict.statistics.advertisingReturn,
       value: formatNumber(totalReturn),
-      note: unit,
+      note: unit ? currencyMark(unit, locale) : unit,
       tone: "datum" as const,
       trend: <TrendBadge current={totalReturn} previous={prevTotalReturn} />,
       hasData: totalReturn > 0,
@@ -83,14 +79,14 @@ export function DashboardFigures({
     {
       label: dict.dashboard.associationReturn,
       value: formatNumber(associationReturn),
-      note: unit,
+      note: unit ? currencyMark(unit, locale) : unit,
       tone: "datum" as const,
       hasData: associationReturn > 0,
     },
     {
       label: dict.statistics.costPerResult,
       value: formatMetric(overallCostPerResult, (n) => formatNumber(n)),
-      note: unit,
+      note: unit ? currencyMark(unit, locale) : unit,
       tone: "amber" as const,
       trend: (
         <TrendBadge current={overallCostPerResult ?? 0} previous={prevCostPerResult} positiveIsGood={false} />
@@ -107,19 +103,11 @@ export function DashboardFigures({
     },
     {
       label: dict.statistics.avgResultValue,
-      value: formatMetric(avgResultValue, (n) => formatNumber(n)),
-      note: unit,
+      value: formatMetric(averageResultValue, (n) => formatNumber(n)),
+      note: unit ? currencyMark(unit, locale) : unit,
       tone: "ink" as const,
-      trend: <TrendBadge current={avgResultValue ?? 0} previous={prevAvgResultValue} />,
-      hasData: avgResultValue !== null,
-    },
-    {
-      label: dict.statistics.donationsPixel,
-      value: formatNumber(donationValue),
-      note: `${unit ? `${unit} · ` : ""}${formatCount(donationCount)} ${dict.dashboard.donationCount}`,
-      tone: "datum" as const,
-      trend: <TrendBadge current={donationValue} previous={prevDonationValue} />,
-      hasData: donationValue > 0 || donationCount > 0,
+      trend: <TrendBadge current={averageResultValue ?? 0} previous={prevAverageResultValue} />,
+      hasData: averageResultValue !== null,
     },
     {
       label: dict.statistics.roas,

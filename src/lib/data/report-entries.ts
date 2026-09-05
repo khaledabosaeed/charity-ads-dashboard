@@ -1,4 +1,5 @@
 import { createClient } from "@/lib/supabase/server";
+import { withDisplayPlatformName } from "@/lib/format";
 import type { StatisticsEntryWithRelations } from "@/types/domain";
 
 /** The extent every report sheet is drawn from. */
@@ -56,7 +57,7 @@ export async function getReportEntries(
   if (filters.to) query = query.lte("period_end", filters.to);
 
   const { data } = await query;
-  return (data as unknown as StatisticsEntryWithRelations[]) ?? [];
+  return ((data as unknown as StatisticsEntryWithRelations[]) ?? []).map(withDisplayPlatformName);
 }
 
 /**

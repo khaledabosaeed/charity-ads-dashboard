@@ -81,7 +81,7 @@ const ar: Dictionary = {
     donationValue: "قيمة التبرعات",
     orderCount: "عدد الطلبات",
     advertisingReturn: "إجمالي العائد الإعلاني",
-    associationReturn: "إجمالي عائد الجمعيات",
+    associationReturn: "إيرادات الجمعية",
     avgRoas: "العائد على الإنفاق الإعلاني (ROAS)",
     chartTitle: "المصروف والعائد حسب التاريخ",
     latestEntries: "أحدث السجلات",
@@ -142,7 +142,7 @@ const ar: Dictionary = {
     donationValue: "قيمة التبرعات",
     orderCount: "عدد الطلبات",
     advertisingReturn: "قيمة العائد الإعلاني",
-    associationReturn: "عائد الجمعية",
+    associationReturn: "إيراد الجمعية",
     remaining: "المتبقي",
     spendPct: "نسبة الصرف",
     roas: "ROAS",
@@ -157,7 +157,7 @@ const ar: Dictionary = {
     groupFigures: "الأرقام",
     livePreview: "القراءة قبل الحفظ",
     confirmDeleteBody:
-      "سيتم حذف هذا السجل الذي أدخله الميديا باير. إذا كان آخر سطر في ذلك اليوم، يُحذف معه عائد الجمعية. لا يمكن التراجع.",
+      "سيتم حذف هذا السجل الذي أدخله الميديا باير. إذا كان آخر سطر في ذلك اليوم، يُحذف معه إيراد الجمعية. لا يمكن التراجع.",
   },
   associations: {
     title: "الجمعيات",

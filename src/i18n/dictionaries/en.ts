@@ -81,7 +81,7 @@ const en: Dictionary = {
     donationValue: "Donation Value",
     orderCount: "Order Count",
     advertisingReturn: "Total Advertising Return",
-    associationReturn: "Total Association Return",
+    associationReturn: "Association Revenue",
     avgRoas: "Advertising ROAS",
     chartTitle: "Spend & Return by Date",
     latestEntries: "Latest Entries",
@@ -142,7 +142,7 @@ const en: Dictionary = {
     donationValue: "Donation Value",
     orderCount: "Order Count",
     advertisingReturn: "Advertising Return",
-    associationReturn: "Association Return",
+    associationReturn: "Association Revenue",
     remaining: "Remaining",
     spendPct: "Spend %",
     roas: "ROAS",
@@ -157,7 +157,7 @@ const en: Dictionary = {
     groupFigures: "Figures",
     livePreview: "Reading before save",
     confirmDeleteBody:
-      "This deletes the line the media buyer filed. If it is the last line for that day, the association return is removed with it. This cannot be undone.",
+      "This deletes the line the media buyer filed. If it is the last line for that day, the association revenue is removed with it. This cannot be undone.",
   },
   associations: {
     title: "Associations",

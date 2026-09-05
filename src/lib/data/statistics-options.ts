@@ -1,4 +1,5 @@
 import { createClient } from "@/lib/supabase/server";
+import { displayPlatformName } from "@/lib/format";
 
 export type AssociationOption = {
   id: string;
@@ -29,6 +30,7 @@ export async function getAvailableAssociationsWithPlatforms(): Promise<Associati
       }).association_platforms ?? []
     )
       .map((ap) => ap.platform)
-      .filter((p): p is { id: string; name: string } => Boolean(p)),
+      .filter((p): p is { id: string; name: string } => Boolean(p))
+      .map((p) => ({ ...p, name: displayPlatformName(p.name) })),
   }));
 }
