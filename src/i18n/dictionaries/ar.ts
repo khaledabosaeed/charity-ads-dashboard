@@ -55,6 +55,7 @@ const ar: Dictionary = {
     loading: "جارٍ التحميل...",
     noData: "لا توجد بيانات لعرضها",
     savedSuccessfully: "تم الحفظ بنجاح",
+    deletedSuccessfully: "تم الحذف بنجاح",
     errorOccurred: "حدث خطأ، حاول مرة أخرى",
     all: "الكل",
     from: "من",
@@ -90,9 +91,6 @@ const ar: Dictionary = {
     overrun: "تجاوز الميزانية",
     entriesCounted: "عدد السجلات",
     spendReading: "من الميزانية",
-    aov: "متوسط قيمة الطلب (AOV)",
-    conversionRate: "معدل التحويل (طلبات ÷ زوار)",
-    costPerOrder: "تكلفة الطلب",
     presetToday: "اليوم",
     presetYesterday: "أمس",
     presetLast7: "آخر 7 أيام",
@@ -128,10 +126,6 @@ const ar: Dictionary = {
     clientsTitle: "أداء الجمعيات",
     rank: "#",
     view: "عرض",
-    storeSalesTitle: "مبيعات المتجر الإلكتروني الفعلية",
-    storeOrderCount: "عدد الطلبات",
-    storeSalesValue: "إجمالي المبيعات الفعلية",
-    storeVisitCount: "عدد الزوار",
   },
   statistics: {
     title: "الإحصائيات",
@@ -162,6 +156,8 @@ const ar: Dictionary = {
     groupReference: "بيانات الفترة",
     groupFigures: "الأرقام",
     livePreview: "القراءة قبل الحفظ",
+    confirmDeleteBody:
+      "سيتم حذف هذا السجل الذي أدخله الميديا باير. إذا كان آخر سطر في ذلك اليوم، يُحذف معه عائد الجمعية. لا يمكن التراجع.",
   },
   associations: {
     title: "الجمعيات",

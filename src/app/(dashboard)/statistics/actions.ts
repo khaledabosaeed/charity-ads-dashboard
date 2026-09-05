@@ -113,3 +113,58 @@ export async function updateStatisticsEntry(
   revalidatePath("/dashboard");
   redirect("/statistics");
 }
+
+function revalidateEntryPaths() {
+  revalidatePath("/statistics");
+  revalidatePath("/dashboard");
+  revalidatePath("/daily");
+  revalidatePath("/entry");
+  revalidatePath("/platforms");
+  revalidatePath("/associations");
+}
+
+/**
+ * Removes one filed line. If it was the last platform line for that day,
+ * the day-level association return goes with it so the sheet does not keep
+ * a figure that no longer belongs to any reading.
+ */
+export async function deleteStatisticsEntry(id: string): Promise<{ error?: string }> {
+  const profile = await requireActiveUser();
+  const supabase = await createClient();
+
+  const { data: row } = await supabase
+    .from("statistics_entries")
+    .select("id, association_id, created_by, period_start, period_end")
+    .eq("id", id)
+    .maybeSingle();
+
+  if (!row) return { error: "السجل غير موجود" };
+  if (profile.role !== "admin" && row.created_by !== profile.id) {
+    return { error: "لا يمكنك حذف هذا السجل" };
+  }
+
+  const { error } = await supabase.from("statistics_entries").delete().eq("id", id);
+  if (error) return { error: error.message };
+
+  const { count } = await supabase
+    .from("statistics_entries")
+    .select("id", { count: "exact", head: true })
+    .eq("association_id", row.association_id)
+    .eq("created_by", row.created_by)
+    .eq("period_start", row.period_start)
+    .eq("period_end", row.period_end);
+
+  if ((count ?? 0) === 0) {
+    const { error: salesError } = await supabase
+      .from("store_sales_entries")
+      .delete()
+      .eq("association_id", row.association_id)
+      .eq("created_by", row.created_by)
+      .eq("period_start", row.period_start)
+      .eq("period_end", row.period_end);
+    if (salesError) return { error: salesError.message };
+  }
+
+  revalidateEntryPaths();
+  return {};
+}

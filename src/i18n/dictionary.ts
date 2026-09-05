@@ -53,6 +53,7 @@ export interface Dictionary {
     loading: string;
     noData: string;
     savedSuccessfully: string;
+    deletedSuccessfully: string;
     errorOccurred: string;
     all: string;
     from: string;
@@ -88,9 +89,6 @@ export interface Dictionary {
     overrun: string;
     entriesCounted: string;
     spendReading: string;
-    aov: string;
-    conversionRate: string;
-    costPerOrder: string;
     presetToday: string;
     presetYesterday: string;
     presetLast7: string;
@@ -126,10 +124,6 @@ export interface Dictionary {
     clientsTitle: string;
     rank: string;
     view: string;
-    storeSalesTitle: string;
-    storeOrderCount: string;
-    storeSalesValue: string;
-    storeVisitCount: string;
   };
   statistics: {
     title: string;
@@ -160,6 +154,7 @@ export interface Dictionary {
     groupReference: string;
     groupFigures: string;
     livePreview: string;
+    confirmDeleteBody: string;
   };
   associations: {
     title: string;

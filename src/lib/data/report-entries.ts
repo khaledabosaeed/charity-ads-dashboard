@@ -59,6 +59,24 @@ export async function getReportEntries(
   return (data as unknown as StatisticsEntryWithRelations[]) ?? [];
 }
 
+/**
+ * Day-level association return — one figure per (association, author, period),
+ * not per platform. Platform filters are ignored on purpose.
+ */
+export async function getAssociationReturnTotal(filters: ReportFilters): Promise<number> {
+  const supabase = await createClient();
+
+  let query = supabase.from("store_sales_entries").select("association_return");
+
+  if (filters.associationId) query = query.eq("association_id", filters.associationId);
+  if (filters.mediaBuyerId) query = query.eq("created_by", filters.mediaBuyerId);
+  if (filters.from) query = query.gte("period_start", filters.from);
+  if (filters.to) query = query.lte("period_end", filters.to);
+
+  const { data } = await query;
+  return (data ?? []).reduce((acc, row) => acc + row.association_return, 0);
+}
+
 export type MediaBuyerOption = { id: string; name: string };
 
 /**

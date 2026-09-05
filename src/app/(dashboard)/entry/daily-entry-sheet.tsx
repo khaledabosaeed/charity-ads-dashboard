@@ -6,7 +6,7 @@ import { Save } from "lucide-react";
 import { toast } from "sonner";
 import { useI18n } from "@/i18n";
 import { Button } from "@/components/ui/button";
-import { Input, NativeSelect } from "@/components/ui/input";
+import { NativeSelect, NumberInput } from "@/components/ui/input";
 import { DateField } from "@/components/ui/date-field";
 import { FormItem, FormLabel } from "@/components/forms/field";
 import { DimensionCell, DimensionGrid, RuledHeading, TitleBlock } from "@/components/drawing";
@@ -74,13 +74,9 @@ function PlatformLine({
 
       <FormItem>
         <FormLabel htmlFor={`spend:${platformId}`}>{dict.statistics.amountSpent}</FormLabel>
-        <Input
+        <NumberInput
           id={`spend:${platformId}`}
           name={`spend:${platformId}`}
-          type="number"
-          min="0"
-          step="0.01"
-          inputMode="decimal"
           placeholder="0"
           value={spend}
           onChange={(e) => {
@@ -92,13 +88,9 @@ function PlatformLine({
 
       <FormItem>
         <FormLabel htmlFor={`revenue:${platformId}`}>{dict.statistics.advertisingReturn}</FormLabel>
-        <Input
+        <NumberInput
           id={`revenue:${platformId}`}
           name={`revenue:${platformId}`}
-          type="number"
-          min="0"
-          step="0.01"
-          inputMode="decimal"
           placeholder="0"
           value={revenue}
           onChange={(e) => {
@@ -110,13 +102,10 @@ function PlatformLine({
 
       <FormItem>
         <FormLabel htmlFor={`orders:${platformId}`}>{dict.statistics.orderCount}</FormLabel>
-        <Input
+        <NumberInput
           id={`orders:${platformId}`}
           name={`orders:${platformId}`}
-          type="number"
-          min="0"
-          step="1"
-          inputMode="numeric"
+          integer
           placeholder="0"
           value={orders}
           onChange={(e) => {
@@ -157,7 +146,7 @@ export function DailyEntrySheet({
   buyerName,
   lines,
   currency,
-  storeSales,
+  associationReturn: associationReturnDefault,
 }: {
   associations: AssociationOption[];
   /** Empty for a media buyer: they can only ever file their own day. */
@@ -168,8 +157,8 @@ export function DailyEntrySheet({
   buyerName: string;
   lines: DayLine[];
   currency: string;
-  /** The store's own figures for the day — no platform, unlike `lines`. */
-  storeSales?: { orderCount: number; salesValue: number; visitCount: number };
+  /** The association's own return for the day — one value, no platform. */
+  associationReturn?: number;
 }) {
   const { dict, locale } = useI18n();
   const router = useRouter();
@@ -198,9 +187,9 @@ export function DailyEntrySheet({
     Object.fromEntries(lines.map((l) => [l.platformId, l]))
   );
 
-  const [storeOrderCount, setStoreOrderCount] = useState(String(storeSales?.orderCount || ""));
-  const [storeSalesValue, setStoreSalesValue] = useState(String(storeSales?.salesValue || ""));
-  const [storeVisitCount, setStoreVisitCount] = useState(String(storeSales?.visitCount || ""));
+  const [associationReturn, setAssociationReturn] = useState(
+    String(associationReturnDefault || "")
+  );
 
   useEffect(() => {
     if (state.error) toast.error(state.error);
@@ -222,8 +211,7 @@ export function DailyEntrySheet({
   }
 
   const day = platforms.map(
-    (p) =>
-      draft[p.id] ?? { platformId: p.id, amountSpent: 0, advertisingReturn: 0, orderCount: 0 }
+    (p) => draft[p.id] ?? { platformId: p.id, amountSpent: 0, advertisingReturn: 0, orderCount: 0 }
   );
   const totalSpend = day.reduce((acc, l) => acc + l.amountSpent, 0);
   const totalRevenue = day.reduce((acc, l) => acc + l.advertisingReturn, 0);
@@ -320,55 +308,6 @@ export function DailyEntrySheet({
         <EmptyState message={dict.daily.noPlatforms} />
       ) : null}
 
-      {/* The store's own figures for the day — one block, no platform. */}
-      <div className="flex flex-col gap-3">
-        <RuledHeading>{dict.daily.storeSalesTitle}</RuledHeading>
-        <div className="grid grid-cols-1 gap-4 border border-line bg-paper-raised px-4 py-4 sm:grid-cols-3 sm:px-5">
-          <FormItem>
-            <FormLabel htmlFor="storeOrderCount">{dict.daily.storeOrderCount}</FormLabel>
-            <Input
-              id="storeOrderCount"
-              name="storeOrderCount"
-              type="number"
-              min="0"
-              step="1"
-              inputMode="numeric"
-              placeholder="0"
-              value={storeOrderCount}
-              onChange={(e) => setStoreOrderCount(e.target.value)}
-            />
-          </FormItem>
-          <FormItem>
-            <FormLabel htmlFor="storeSalesValue">{dict.daily.storeSalesValue}</FormLabel>
-            <Input
-              id="storeSalesValue"
-              name="storeSalesValue"
-              type="number"
-              min="0"
-              step="0.01"
-              inputMode="decimal"
-              placeholder="0"
-              value={storeSalesValue}
-              onChange={(e) => setStoreSalesValue(e.target.value)}
-            />
-          </FormItem>
-          <FormItem>
-            <FormLabel htmlFor="storeVisitCount">{dict.daily.storeVisitCount}</FormLabel>
-            <Input
-              id="storeVisitCount"
-              name="storeVisitCount"
-              type="number"
-              min="0"
-              step="1"
-              inputMode="numeric"
-              placeholder="0"
-              value={storeVisitCount}
-              onChange={(e) => setStoreVisitCount(e.target.value)}
-            />
-          </FormItem>
-        </div>
-      </div>
-
       {/* The band's selects only steer the sheet; what is filed is what the
           server drew it from. */}
       <input type="hidden" name="associationId" value={associationId} />
@@ -391,23 +330,37 @@ export function DailyEntrySheet({
                   />
                 </div>
               ))}
+              <div className="flex flex-col gap-3 bg-paper-raised px-4 py-4 sm:px-5">
+                <FormItem>
+                  <FormLabel htmlFor="associationReturn" className="text-[0.9375rem] font-semibold text-ink">
+                    {dict.statistics.associationReturn}
+                  </FormLabel>
+                  <NumberInput
+                    id="associationReturn"
+                    name="associationReturn"
+                    placeholder="0"
+                    value={associationReturn}
+                    onChange={(e) => setAssociationReturn(e.target.value)}
+                  />
+                </FormItem>
+              </div>
             </div>
           </div>
 
           <div className="flex flex-col gap-3">
             <RuledHeading>{dict.daily.daySummary}</RuledHeading>
-            <DimensionGrid className="grid-cols-2 sm:grid-cols-3 lg:grid-cols-5">
-              <DimensionCell
-                label={dict.daily.totalSpend}
-                value={formatNumber(totalSpend)}
-                note={currencyMark(currency, locale)}
-                tone="amber"
-              />
+            <DimensionGrid className="grid-cols-2 sm:grid-cols-3 lg:grid-cols-3">
               <DimensionCell
                 label={dict.daily.totalRevenue}
                 value={formatNumber(totalRevenue)}
                 note={currencyMark(currency, locale)}
                 tone="datum"
+              />
+              <DimensionCell
+                label={dict.daily.totalSpend}
+                value={formatNumber(totalSpend)}
+                note={currencyMark(currency, locale)}
+                tone="amber"
               />
               <DimensionCell
                 label={dict.daily.overallRoas}
@@ -418,6 +371,12 @@ export function DailyEntrySheet({
               <DimensionCell
                 label={dict.daily.activePlatforms}
                 value={`${formatCount(activePlatforms)} / ${formatCount(platforms.length)}`}
+              />
+              <DimensionCell
+                label={dict.statistics.associationReturn}
+                value={formatNumber(toNumber(associationReturn))}
+                note={currencyMark(currency, locale)}
+                tone="datum"
               />
             </DimensionGrid>
           </div>

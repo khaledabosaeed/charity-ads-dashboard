@@ -58,15 +58,12 @@ export async function saveDailySheet(
     associationId: formData.get("associationId"),
     currencyCode: formData.get("currencyCode"),
     rows: readRows(formData),
-    storeOrderCount: formData.get("storeOrderCount") || 0,
-    storeSalesValue: formData.get("storeSalesValue") || 0,
-    storeVisitCount: formData.get("storeVisitCount") || 0,
+    associationReturn: formData.get("associationReturn") || 0,
   });
 
   if (!parsed.success) return { error: parsed.error.issues[0]?.message ?? "تعذّر حفظ اليوم" };
 
-  const { date, associationId, currencyCode, rows, storeOrderCount, storeSalesValue, storeVisitCount } =
-    parsed.data;
+  const { date, associationId, currencyCode, rows, associationReturn } = parsed.data;
 
   /* An admin may file a day on a media buyer's behalf — the band lets them pick
      one. Anyone else files their own day, whatever the form claims. */
@@ -91,7 +88,7 @@ export async function saveDailySheet(
       r.amountSpent > 0 || r.advertisingReturn > 0 || r.orderCount > 0 || recorded.has(r.platformId)
   );
 
-  const { data: existingStoreSales } = await supabase
+  const { data: existingReturn } = await supabase
     .from("store_sales_entries")
     .select("id")
     .eq("association_id", associationId)
@@ -100,10 +97,9 @@ export async function saveDailySheet(
     .eq("period_end", date)
     .maybeSingle();
 
-  const writeStoreSales =
-    storeOrderCount > 0 || storeSalesValue > 0 || storeVisitCount > 0 || Boolean(existingStoreSales);
+  const writeAssociationReturn = associationReturn > 0 || Boolean(existingReturn);
 
-  if (writable.length === 0 && !writeStoreSales) {
+  if (writable.length === 0 && !writeAssociationReturn) {
     return { error: "لا توجد أرقام لحفظها في هذا اليوم" };
   }
 
@@ -126,7 +122,10 @@ export async function saveDailySheet(
     if (error) return { error: mapDbError(error.message) };
   }
 
-  if (writeStoreSales) {
+  if (writeAssociationReturn) {
+    /* Only association_return is written here — the store-sales columns this
+       table also carries (order_count, sales_value, visit_count) are left
+       untouched on rows that already exist, and default to 0 on a new one. */
     const { error } = await supabase.from("store_sales_entries").upsert(
       {
         association_id: associationId,
@@ -134,9 +133,7 @@ export async function saveDailySheet(
         period_start: date,
         period_end: date,
         currency_code: currencyCode,
-        order_count: storeOrderCount,
-        sales_value: storeSalesValue,
-        visit_count: storeVisitCount,
+        association_return: associationReturn,
       },
       { onConflict: "association_id,created_by,period_start,period_end" }
     );
@@ -151,5 +148,5 @@ export async function saveDailySheet(
   revalidatePath("/dashboard");
   revalidatePath("/statistics");
 
-  return { saved: writable.length + (writeStoreSales ? 1 : 0), at: Date.now() };
+  return { saved: writable.length + (writeAssociationReturn ? 1 : 0), at: Date.now() };
 }

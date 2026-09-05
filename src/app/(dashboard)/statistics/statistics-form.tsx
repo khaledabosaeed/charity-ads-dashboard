@@ -4,7 +4,7 @@ import { useActionState, useEffect, useState } from "react";
 import { toast } from "sonner";
 import { useI18n } from "@/i18n";
 import { Button } from "@/components/ui/button";
-import { Input, NativeSelect } from "@/components/ui/input";
+import { Input, NativeSelect, NumberInput } from "@/components/ui/input";
 import { DateField } from "@/components/ui/date-field";
 import { Textarea } from "@/components/ui/textarea";
 import { FormError, FormItem, FormLabel } from "@/components/forms/field";
@@ -15,6 +15,7 @@ import { getDefaultCurrency } from "@/lib/env";
 import type { AssociationOption } from "@/lib/data/statistics-options";
 import type { StatisticsEntry } from "@/types/domain";
 import type { ActionState } from "./actions";
+import { DeleteStatisticsButton } from "./delete-statistics-button";
 
 /** A ruled group on the sheet. The chore is repetitive; the grouping is the map. */
 function FieldGroup({
@@ -155,12 +156,9 @@ export function StatisticsForm({
           <FormLabel htmlFor="budget" required>
             {dict.statistics.budget}
           </FormLabel>
-          <Input
+          <NumberInput
             id="budget"
             name="budget"
-            type="number"
-            min={0}
-            step="0.01"
             defaultValue={entry?.budget ?? 0}
             onChange={(e) => setBudget(Number(e.target.value) || 0)}
             required
@@ -172,12 +170,9 @@ export function StatisticsForm({
           <FormLabel htmlFor="amountSpent" required>
             {dict.statistics.amountSpent}
           </FormLabel>
-          <Input
+          <NumberInput
             id="amountSpent"
             name="amountSpent"
-            type="number"
-            min={0}
-            step="0.01"
             defaultValue={entry?.amount_spent ?? 0}
             onChange={(e) => setSpent(Number(e.target.value) || 0)}
             required
@@ -189,12 +184,10 @@ export function StatisticsForm({
           <FormLabel htmlFor="donationCount" required>
             {dict.statistics.donationCount}
           </FormLabel>
-          <Input
+          <NumberInput
             id="donationCount"
             name="donationCount"
-            type="number"
-            min={0}
-            step="1"
+            integer
             defaultValue={entry?.donation_count ?? 0}
             required
           />
@@ -205,12 +198,10 @@ export function StatisticsForm({
           <FormLabel htmlFor="orderCount" required>
             {dict.statistics.orderCount}
           </FormLabel>
-          <Input
+          <NumberInput
             id="orderCount"
             name="orderCount"
-            type="number"
-            min={0}
-            step="1"
+            integer
             defaultValue={entry?.order_count ?? 0}
             required
           />
@@ -221,12 +212,9 @@ export function StatisticsForm({
           <FormLabel htmlFor="donationValue" required>
             {dict.statistics.donationValue}
           </FormLabel>
-          <Input
+          <NumberInput
             id="donationValue"
             name="donationValue"
-            type="number"
-            min={0}
-            step="0.01"
             defaultValue={entry?.donation_value ?? 0}
             required
           />
@@ -237,12 +225,9 @@ export function StatisticsForm({
           <FormLabel htmlFor="advertisingReturn" required>
             {dict.statistics.advertisingReturn}
           </FormLabel>
-          <Input
+          <NumberInput
             id="advertisingReturn"
             name="advertisingReturn"
-            type="number"
-            min={0}
-            step="0.01"
             defaultValue={entry?.advertising_return ?? 0}
             required
           />
@@ -253,12 +238,9 @@ export function StatisticsForm({
           <FormLabel htmlFor="associationReturn" required>
             {dict.statistics.associationReturn}
           </FormLabel>
-          <Input
+          <NumberInput
             id="associationReturn"
             name="associationReturn"
-            type="number"
-            min={0}
-            step="0.01"
             defaultValue={entry?.association_return ?? 0}
             required
           />
@@ -293,10 +275,11 @@ export function StatisticsForm({
       </FormItem>
 
       <FormError message={state.error} />
-      <div className="flex items-center gap-3">
+      <div className="flex flex-wrap items-center gap-3">
         <Button type="submit" disabled={isPending} pending={isPending}>
           {isPending ? dict.common.loading : dict.common.save}
         </Button>
+        {entry ? <DeleteStatisticsButton id={entry.id} redirectTo="/statistics" /> : null}
       </div>
     </form>
   );

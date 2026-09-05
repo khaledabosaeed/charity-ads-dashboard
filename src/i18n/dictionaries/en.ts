@@ -55,6 +55,7 @@ const en: Dictionary = {
     loading: "Loading...",
     noData: "No data to display",
     savedSuccessfully: "Saved successfully",
+    deletedSuccessfully: "Deleted successfully",
     errorOccurred: "Something went wrong, please try again",
     all: "All",
     from: "From",
@@ -90,9 +91,6 @@ const en: Dictionary = {
     overrun: "Over budget",
     entriesCounted: "Entries",
     spendReading: "of budget",
-    aov: "Avg. Order Value (AOV)",
-    conversionRate: "Conversion Rate (orders ÷ visits)",
-    costPerOrder: "Cost per Order",
     presetToday: "Today",
     presetYesterday: "Yesterday",
     presetLast7: "Last 7 Days",
@@ -128,10 +126,6 @@ const en: Dictionary = {
     clientsTitle: "Association performance",
     rank: "#",
     view: "View",
-    storeSalesTitle: "Actual Online Store Sales",
-    storeOrderCount: "Order Count",
-    storeSalesValue: "Total Actual Sales",
-    storeVisitCount: "Visit Count",
   },
   statistics: {
     title: "Statistics",
@@ -162,6 +156,8 @@ const en: Dictionary = {
     groupReference: "Period details",
     groupFigures: "Figures",
     livePreview: "Reading before save",
+    confirmDeleteBody:
+      "This deletes the line the media buyer filed. If it is the last line for that day, the association return is removed with it. This cannot be undone.",
   },
   associations: {
     title: "Associations",

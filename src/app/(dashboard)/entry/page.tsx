@@ -43,10 +43,10 @@ export default async function DailyEntryPage({
       : profile.id;
 
   let lines: DayLine[] = [];
-  let storeSales: { orderCount: number; salesValue: number; visitCount: number } | undefined;
+  let associationReturn: number | undefined;
   if (associationId) {
     const supabase = await createClient();
-    const [{ data }, { data: storeRow }] = await Promise.all([
+    const [{ data }, { data: returnRow }] = await Promise.all([
       supabase
         .from("statistics_entries")
         .select("platform_id, amount_spent, advertising_return, order_count")
@@ -56,7 +56,7 @@ export default async function DailyEntryPage({
         .eq("period_end", date),
       supabase
         .from("store_sales_entries")
-        .select("order_count, sales_value, visit_count")
+        .select("association_return")
         .eq("association_id", associationId)
         .eq("created_by", mediaBuyerId)
         .eq("period_start", date)
@@ -71,13 +71,7 @@ export default async function DailyEntryPage({
       orderCount: e.order_count,
     }));
 
-    if (storeRow) {
-      storeSales = {
-        orderCount: storeRow.order_count,
-        salesValue: storeRow.sales_value,
-        visitCount: storeRow.visit_count,
-      };
-    }
+    associationReturn = returnRow?.association_return;
   }
 
   return (
@@ -91,7 +85,7 @@ export default async function DailyEntryPage({
       buyerName={mediaBuyers.find((b) => b.id === mediaBuyerId)?.name ?? profile.full_name}
       lines={lines}
       currency={getDefaultCurrency()}
-      storeSales={storeSales}
+      associationReturn={associationReturn}
     />
   );
 }

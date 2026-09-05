@@ -18,8 +18,9 @@ a media-buyer session) against the local instance:
    Same as above but with an association they have no
    `association_media_buyers` row for → rejected.
 
-4. **Media buyer cannot delete any statistics entry**, including their own
-   (no delete policy exists for non-admins) → rejected.
+4. **Media buyer can delete only their own statistics / store-sales rows.**
+   A delete of someone else's row → 0 rows / rejected. An admin can delete
+   any row.
 
 5. **Media buyer cannot read `audit_logs`** → 0 rows / permission error.
 

@@ -11,7 +11,7 @@
 
 -- 1) Ensure a profile row exists for the auth user (skip if already present):
 insert into profiles (id, full_name, role, is_active)
-select id, coalesce(raw_user_meta_data->>'full_name', email), 'admin', true
+select id, coalesce(raw_user_meta_dat   a->>'full_name', email), 'admin', true
 from auth.users
 where lower(email) = lower('Cmarketer613@gmail.com')
 on conflict (id) do update set role = 'admin', is_active = true;

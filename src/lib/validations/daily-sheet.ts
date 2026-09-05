@@ -17,10 +17,8 @@ export const dailySheetSchema = z.object({
   associationId: z.string().uuid("الجمعية مطلوبة"),
   currencyCode: z.string().regex(/^[A-Z]{3}$/, "كود العملة يجب أن يكون 3 أحرف حسب ISO 4217"),
   rows: z.array(dailySheetRowSchema).min(1, "لا توجد منصات مرتبطة بهذه الجمعية"),
-  /** The store's own figures for the day — no platform, unlike the rows above. */
-  storeOrderCount: amount,
-  storeSalesValue: amount,
-  storeVisitCount: amount,
+  /** The association's own return for the day — one value, no platform. */
+  associationReturn: amount,
 });
 
 export type DailySheetInput = z.infer<typeof dailySheetSchema>;

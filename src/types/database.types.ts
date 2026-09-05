@@ -333,6 +333,7 @@ export type Database = {
       store_sales_entries: {
         Row: {
           association_id: string
+          association_return: number
           created_at: string
           created_by: string
           currency_code: string
@@ -346,6 +347,7 @@ export type Database = {
         }
         Insert: {
           association_id: string
+          association_return?: number
           created_at?: string
           created_by: string
           currency_code?: string
@@ -359,6 +361,7 @@ export type Database = {
         }
         Update: {
           association_id?: string
+          association_return?: number
           created_at?: string
           created_by?: string
           currency_code?: string

@@ -5,6 +5,7 @@ import { useI18n } from "@/i18n";
 import { Button } from "@/components/ui/button";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { EmptyState } from "@/components/layout/empty-state";
+import { DeleteStatisticsButton } from "./delete-statistics-button";
 import { formatMoney, formatCount, formatPercent, formatPeriod } from "@/lib/format";
 import {
   avgDonationValue,
@@ -39,7 +40,6 @@ export function StatisticsTable({ entries }: { entries: StatisticsEntryWithRelat
           <TableHead numeric>{dict.statistics.donationCount}</TableHead>
           <TableHead numeric>{dict.statistics.resultCount}</TableHead>
           <TableHead numeric>{dict.statistics.costPerResult}</TableHead>
-          <TableHead numeric>{dict.statistics.associationReturn}</TableHead>
           <TableHead>{dict.statistics.createdBy}</TableHead>
           <TableHead>
             <span className="sr-only">{dict.common.actions}</span>
@@ -85,14 +85,16 @@ export function StatisticsTable({ entries }: { entries: StatisticsEntryWithRelat
                   formatMoney(n, e.currency_code, locale)
                 )}
               </TableCell>
-              <TableCell numeric>{formatMoney(e.association_return, e.currency_code, locale)}</TableCell>
               <TableCell className="whitespace-nowrap text-ink-2">
                 {e.author?.full_name ?? "—"}
               </TableCell>
               <TableCell>
-                <Button asChild size="sm" variant="outline">
-                  <Link href={`/statistics/${e.id}/edit`}>{dict.common.edit}</Link>
-                </Button>
+                <div className="flex flex-wrap items-center gap-2">
+                  <Button asChild size="sm" variant="outline">
+                    <Link href={`/statistics/${e.id}/edit`}>{dict.common.edit}</Link>
+                  </Button>
+                  <DeleteStatisticsButton id={e.id} />
+                </div>
               </TableCell>
             </TableRow>
           );

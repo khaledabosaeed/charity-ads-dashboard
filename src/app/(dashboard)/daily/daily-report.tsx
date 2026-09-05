@@ -6,6 +6,7 @@ import { Button } from "@/components/ui/button";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { DimensionCell, DimensionGrid, RuledHeading } from "@/components/drawing";
 import { EmptyState } from "@/components/layout/empty-state";
+import { DeleteStatisticsButton } from "@/app/(dashboard)/statistics/delete-statistics-button";
 import { currencyMark, formatCount, formatMoney, formatNumber } from "@/lib/format";
 import { formatMetric, roas } from "@/lib/calculations/statistics";
 import { rollup, unifiedCurrency } from "@/lib/calculations/rollup";
@@ -89,9 +90,12 @@ export function DailyReport({ entries }: { entries: StatisticsEntryWithRelations
                       {e.author?.full_name ?? "—"}
                     </TableCell>
                     <TableCell>
-                      <Button asChild size="sm" variant="outline">
-                        <Link href={`/statistics/${e.id}/edit`}>{dict.common.edit}</Link>
-                      </Button>
+                      <div className="flex flex-wrap items-center gap-2">
+                        <Button asChild size="sm" variant="outline">
+                          <Link href={`/statistics/${e.id}/edit`}>{dict.common.edit}</Link>
+                        </Button>
+                        <DeleteStatisticsButton id={e.id} />
+                      </div>
                     </TableCell>
                   </TableRow>
                 );

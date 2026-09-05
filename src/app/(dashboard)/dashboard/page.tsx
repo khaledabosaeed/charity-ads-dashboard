@@ -1,6 +1,6 @@
 import { createClient } from "@/lib/supabase/server";
 import { getAvailableAssociationsWithPlatforms } from "@/lib/data/statistics-options";
-import { getStoreSalesEntries, sumStoreSales } from "@/lib/data/store-sales";
+import { getAssociationReturnTotal } from "@/lib/data/report-entries";
 import { previousPeriod } from "@/lib/dates/presets";
 import { rollupBy, unifiedCurrency } from "@/lib/calculations/rollup";
 import { PageHeading } from "@/components/layout/page-heading";
@@ -45,19 +45,22 @@ export default async function DashboardPage({
      mirror, so the previous period is simply left empty. */
   const previous = params.from && params.to ? previousPeriod(params.from, params.to) : undefined;
 
-  const [entries, previousEntries, associations, storeSalesEntries] = await Promise.all([
+  const [entries, previousEntries, associations, salesReturn] = await Promise.all([
     fetchEntries(params.from, params.to),
     previous ? fetchEntries(previous.from, previous.to) : Promise.resolve([]),
     getAvailableAssociationsWithPlatforms(),
-    getStoreSalesEntries({
+    getAssociationReturnTotal({
       associationId: params.associationId,
       from: params.from,
       to: params.to,
     }),
   ]);
 
-  const storeSales = sumStoreSales(storeSalesEntries);
-  const totalSpent = entries.reduce((acc, e) => acc + e.amount_spent, 0);
+  /* The day sheet writes association return once per day on store_sales_entries.
+     Older statistics rows still carry their own copy — use that only when the
+     day-level figure has not been filed yet. */
+  const legacyReturn = entries.reduce((acc, e) => acc + e.association_return, 0);
+  const associationReturn = salesReturn > 0 ? salesReturn : legacyReturn;
 
   const latest = [...entries].reverse().slice(0, 10);
 
@@ -90,27 +93,30 @@ export default async function DashboardPage({
       />
       <StatisticsFilters associations={associations} searchParams={params} />
 
-      {entries.length === 0 && storeSalesEntries.length === 0 ? (
+      {entries.length === 0 && associationReturn === 0 ? (
         <EmptyState action={<NewLinkButton href="/statistics/new" labelKey="statistics.new" />} />
       ) : (
         <>
-          <DashboardFigures entries={entries} previousEntries={previousEntries} />
-
-          <DashboardExtras
-            platformReadings={platformReadings}
-            unit={unit}
-            storeSales={storeSales}
-            totalSpent={totalSpent}
+          <DashboardFigures
+            entries={entries}
+            previousEntries={previousEntries}
+            associationReturn={associationReturn}
           />
 
-          <DashboardChart entries={entries} />
+          {entries.length > 0 ? (
+            <>
+              <DashboardExtras platformReadings={platformReadings} unit={unit} />
 
-          <div className="flex flex-col gap-3">
-            <RuledHeading>
-              <LatestEntriesLabel />
-            </RuledHeading>
-            <StatisticsTable entries={latest} />
-          </div>
+              <DashboardChart entries={entries} />
+
+              <div className="flex flex-col gap-3">
+                <RuledHeading>
+                  <LatestEntriesLabel />
+                </RuledHeading>
+                <StatisticsTable entries={latest} />
+              </div>
+            </>
+          ) : null}
         </>
       )}
     </>

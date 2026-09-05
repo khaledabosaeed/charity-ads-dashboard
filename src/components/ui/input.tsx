@@ -1,5 +1,6 @@
 import * as React from "react";
 import { cn } from "@/lib/utils";
+import { sanitizeDecimalInput, sanitizeIntegerInput } from "@/lib/numeric-input";
 
 /** A field on the sheet: a ruled blank, squared off, that inks amber when active. */
 export const fieldClass =
@@ -17,7 +18,7 @@ export const Input = React.forwardRef<HTMLInputElement, React.InputHTMLAttribute
       className={cn(
         fieldClass,
         /* Numbers are measurements: tabular, LTR, in the figure face. */
-        type === "number" && "figure",
+        type === "number" && "figure [appearance:textfield] [&::-webkit-inner-spin-button]:appearance-none [&::-webkit-outer-spin-button]:appearance-none",
         className
       )}
       {...props}
@@ -25,6 +26,34 @@ export const Input = React.forwardRef<HTMLInputElement, React.InputHTMLAttribute
   )
 );
 Input.displayName = "Input";
+
+type NumberInputProps = Omit<React.InputHTMLAttributes<HTMLInputElement>, "type"> & {
+  /** Whole counts (orders). Default is a decimal amount. */
+  integer?: boolean;
+};
+
+/** A figure blank that only accepts digits — letters, signs, and `e` never land. */
+export const NumberInput = React.forwardRef<HTMLInputElement, NumberInputProps>(
+  ({ integer, onChange, className, ...props }, ref) => (
+    <Input
+      {...props}
+      ref={ref}
+      type="text"
+      inputMode={integer ? "numeric" : "decimal"}
+      autoComplete="off"
+      spellCheck={false}
+      className={cn("figure", className)}
+      onChange={(e) => {
+        const next = integer
+          ? sanitizeIntegerInput(e.target.value)
+          : sanitizeDecimalInput(e.target.value);
+        if (e.target.value !== next) e.target.value = next;
+        onChange?.(e);
+      }}
+    />
+  )
+);
+NumberInput.displayName = "NumberInput";
 
 /** A native select styled as the same ruled blank, with a drawn chevron. */
 export const NativeSelect = React.forwardRef<

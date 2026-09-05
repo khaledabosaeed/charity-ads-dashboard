@@ -22,9 +22,12 @@ function colsClass(n: number): string {
 export function DashboardFigures({
   entries,
   previousEntries,
+  associationReturn,
 }: {
   entries: StatisticsEntryWithRelations[];
   previousEntries: StatisticsEntryWithRelations[];
+  /** Day-level association return, already totalled for the current extent. */
+  associationReturn: number;
 }) {
   const { dict } = useI18n();
 
@@ -49,8 +52,6 @@ export function DashboardFigures({
 
   const avgResultValue = avgDonationValue(donationValue, resultCount);
   const prevAvgResultValue = avgDonationValue(prevDonationValue, prevResultCount);
-
-  const associationReturn = sum(entries, (e) => e.association_return);
 
   /* Totals only carry a currency when every entry agrees on one. Mixed books
      are reported as bare figures rather than silently stamped with a symbol. */
@@ -78,6 +79,13 @@ export function DashboardFigures({
       tone: "datum" as const,
       trend: <TrendBadge current={totalReturn} previous={prevTotalReturn} />,
       hasData: totalReturn > 0,
+    },
+    {
+      label: dict.dashboard.associationReturn,
+      value: formatNumber(associationReturn),
+      note: unit,
+      tone: "datum" as const,
+      hasData: associationReturn > 0,
     },
     {
       label: dict.statistics.costPerResult,
@@ -125,18 +133,11 @@ export function DashboardFigures({
 
   const secondary = [
     {
-      label: dict.dashboard.associationReturn,
-      value: formatNumber(associationReturn),
-      note: unit,
-      tone: "datum" as const,
-      hasData: associationReturn > 0,
-    },
-    {
       label: dict.dashboard.entriesCounted,
       value: formatCount(entries.length),
       note: undefined,
       tone: "ink" as const,
-      hasData: true,
+      hasData: entries.length > 0,
     },
   ].filter((c) => c.hasData);
 
