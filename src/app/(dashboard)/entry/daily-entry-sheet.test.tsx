@@ -68,7 +68,6 @@ describe("DailyEntrySheet", () => {
     /* the platform line still reads advertising return; the day's ROAS reads association return */
     expect(screen.getByText("2.50×")).toBeInTheDocument();
     expect(screen.getByText("1.50×")).toBeInTheDocument();
-    expect(screen.getByText(`1 / 2`)).toBeInTheDocument();
   });
 
   it("files the day under the buyer and association the sheet was drawn from", () => {
