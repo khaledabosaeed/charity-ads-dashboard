@@ -19,6 +19,7 @@ const en: Dictionary = {
     expandRail: "Expand sidebar",
     roleAdmin: "Admin",
     roleMediaBuyer: "Media buyer",
+    roleViewer: "Viewer",
   },
   login: {
     title: "Sign in",
@@ -187,6 +188,8 @@ const en: Dictionary = {
     status: "Status",
     associationsAssigned: "Assigned associations",
     adminSeesEverything: "An admin reads every association, so none are assigned.",
+    viewerSeesEverything:
+      "A viewer reads every association and changes nothing, so none are assigned.",
     selfRoleLocked: "You cannot change or disable your own account's role.",
     you: "(you)",
     account: "My account",

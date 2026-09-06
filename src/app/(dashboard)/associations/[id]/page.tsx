@@ -1,6 +1,6 @@
 import { notFound } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
-import { getCurrentProfile } from "@/lib/auth/session";
+import { requireRoles } from "@/lib/auth/session";
 import { displayPlatformName, withDisplayPlatformName } from "@/lib/format";
 import { PageHeading } from "@/components/layout/page-heading";
 import { AssociationDetail } from "./association-detail";
@@ -13,7 +13,7 @@ export default async function AssociationDetailPage({
 }) {
   const { id } = await params;
   const supabase = await createClient();
-  const profile = await getCurrentProfile();
+  const profile = await requireRoles("admin", "media_buyer");
 
   const [{ data: association }, { data: platforms }, { data: entries }, mediaBuyersResult] =
     await Promise.all([

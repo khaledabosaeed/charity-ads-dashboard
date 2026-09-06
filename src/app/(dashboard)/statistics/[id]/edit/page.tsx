@@ -1,4 +1,5 @@
 import { notFound } from "next/navigation";
+import { requireRoles } from "@/lib/auth/session";
 import { createClient } from "@/lib/supabase/server";
 import { getAvailableAssociationsWithPlatforms } from "@/lib/data/statistics-options";
 import { PageHeading } from "@/components/layout/page-heading";
@@ -10,6 +11,8 @@ export default async function EditStatisticsPage({
 }: {
   params: Promise<{ id: string }>;
 }) {
+  await requireRoles("admin", "media_buyer");
+
   const { id } = await params;
   const supabase = await createClient();
 

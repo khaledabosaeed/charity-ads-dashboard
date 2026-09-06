@@ -18,8 +18,18 @@ import {
 import { cn } from "@/lib/utils";
 import type { StatisticsEntryWithRelations } from "@/types/domain";
 
-/** The schedule. Figure columns are tabular and end-aligned so digits stack. */
-export function StatisticsTable({ entries }: { entries: StatisticsEntryWithRelations[] }) {
+/**
+ * The schedule. Figure columns are tabular and end-aligned so digits stack.
+ * `readOnly` drops the actions column outright rather than disabling it — a
+ * viewer is not being denied a control, they simply have no such column.
+ */
+export function StatisticsTable({
+  entries,
+  readOnly = false,
+}: {
+  entries: StatisticsEntryWithRelations[];
+  readOnly?: boolean;
+}) {
   const { dict, locale } = useI18n();
 
   if (entries.length === 0) return <EmptyState />;
@@ -41,9 +51,11 @@ export function StatisticsTable({ entries }: { entries: StatisticsEntryWithRelat
           <TableHead numeric>{dict.statistics.resultCount}</TableHead>
           <TableHead numeric>{dict.statistics.costPerResult}</TableHead>
           <TableHead>{dict.statistics.createdBy}</TableHead>
-          <TableHead>
-            <span className="sr-only">{dict.common.actions}</span>
-          </TableHead>
+          {readOnly ? null : (
+            <TableHead>
+              <span className="sr-only">{dict.common.actions}</span>
+            </TableHead>
+          )}
         </TableRow>
       </TableHeader>
       <TableBody>
@@ -88,14 +100,16 @@ export function StatisticsTable({ entries }: { entries: StatisticsEntryWithRelat
               <TableCell className="whitespace-nowrap text-ink-2">
                 {e.author?.full_name ?? "—"}
               </TableCell>
-              <TableCell>
-                <div className="flex flex-wrap items-center gap-2">
-                  <Button asChild size="sm" variant="outline">
-                    <Link href={`/statistics/${e.id}/edit`}>{dict.common.edit}</Link>
-                  </Button>
-                  <DeleteStatisticsButton id={e.id} />
-                </div>
-              </TableCell>
+              {readOnly ? null : (
+                <TableCell>
+                  <div className="flex flex-wrap items-center gap-2">
+                    <Button asChild size="sm" variant="outline">
+                      <Link href={`/statistics/${e.id}/edit`}>{dict.common.edit}</Link>
+                    </Button>
+                    <DeleteStatisticsButton id={e.id} />
+                  </div>
+                </TableCell>
+              )}
             </TableRow>
           );
         })}

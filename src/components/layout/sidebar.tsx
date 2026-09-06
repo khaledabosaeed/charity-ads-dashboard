@@ -17,13 +17,22 @@ import { cn } from "@/lib/utils";
 import type { UserRole } from "@/types/domain";
 
 /**
- * Two jobs, two rails. A media buyer's day runs entry → today's report →
+ * Three jobs, three rails. A media buyer's day runs entry → today's report →
  * platform standing → association standing, so those four sheets are the whole
  * navigation. An admin owns the account structure instead, and keeps the
- * portfolio dashboard, the full record, and the admin sheets.
+ * portfolio dashboard, the full record, and the admin sheets. A viewer gets
+ * the admin's three reading sheets and nothing that writes.
  */
 export function useNavItems(role: UserRole) {
   const { dict } = useI18n();
+
+  if (role === "viewer") {
+    return [
+      { href: "/dashboard", label: dict.nav.dashboard, icon: LayoutDashboard },
+      { href: "/daily", label: dict.nav.dailyReport, icon: ClipboardList },
+      { href: "/statistics", label: dict.nav.statistics, icon: ListChecks },
+    ];
+  }
 
   if (role !== "admin") {
     return [

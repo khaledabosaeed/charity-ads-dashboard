@@ -1,3 +1,5 @@
+import { requireRoles } from "@/lib/auth/session";
+import { canWrite } from "@/lib/auth/roles";
 import { createClient } from "@/lib/supabase/server";
 import { getAvailableAssociationsWithPlatforms } from "@/lib/data/statistics-options";
 import { PageHeading } from "@/components/layout/page-heading";
@@ -12,6 +14,8 @@ export default async function StatisticsPage({
 }: {
   searchParams: Promise<Record<string, string | undefined>>;
 }) {
+  const profile = await requireRoles("admin", "viewer");
+
   const params = await searchParams;
   const supabase = await createClient();
 
@@ -34,13 +38,18 @@ export default async function StatisticsPage({
     <div className="flex flex-col gap-6">
       <PageHeading
         titleKey="statistics.title"
-        action={<NewLinkButton href="/statistics/new" labelKey="statistics.new" />}
+        action={
+          canWrite(profile.role) ? (
+            <NewLinkButton href="/statistics/new" labelKey="statistics.new" />
+          ) : null
+        }
       />
       <StatisticsFilters associations={associations} searchParams={params} />
       <StatisticsTable
         entries={((entries as unknown as StatisticsEntryWithRelations[]) ?? []).map(
           withDisplayPlatformName
         )}
+        readOnly={!canWrite(profile.role)}
       />
     </div>
   );

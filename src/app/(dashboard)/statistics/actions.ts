@@ -2,7 +2,7 @@
 
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
-import { requireActiveUser } from "@/lib/auth/session";
+import { requireRoles } from "@/lib/auth/session";
 import { createClient } from "@/lib/supabase/server";
 import { statisticsEntrySchema } from "@/lib/validations/statistics";
 
@@ -49,7 +49,7 @@ function mapDbError(message: string): string {
 }
 
 export async function createStatisticsEntry(_prev: ActionState, formData: FormData): Promise<ActionState> {
-  const profile = await requireActiveUser();
+  const profile = await requireRoles("admin", "media_buyer");
   const parsed = parseForm(formData);
   if (!parsed.success) return { fieldErrors: fieldErrorsFrom(parsed.error) };
 
@@ -83,7 +83,7 @@ export async function updateStatisticsEntry(
   _prev: ActionState,
   formData: FormData
 ): Promise<ActionState> {
-  await requireActiveUser();
+  await requireRoles("admin", "media_buyer");
   const parsed = parseForm(formData);
   if (!parsed.success) return { fieldErrors: fieldErrorsFrom(parsed.error) };
 
@@ -129,7 +129,7 @@ function revalidateEntryPaths() {
  * a figure that no longer belongs to any reading.
  */
 export async function deleteStatisticsEntry(id: string): Promise<{ error?: string }> {
-  const profile = await requireActiveUser();
+  const profile = await requireRoles("admin", "media_buyer");
   const supabase = await createClient();
 
   const { data: row } = await supabase

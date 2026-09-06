@@ -17,6 +17,7 @@ export interface Dictionary {
     expandRail: string;
     roleAdmin: string;
     roleMediaBuyer: string;
+    roleViewer: string;
   };
   login: {
     title: string;
@@ -183,6 +184,7 @@ export interface Dictionary {
     status: string;
     associationsAssigned: string;
     adminSeesEverything: string;
+    viewerSeesEverything: string;
     selfRoleLocked: string;
     you: string;
     account: string;

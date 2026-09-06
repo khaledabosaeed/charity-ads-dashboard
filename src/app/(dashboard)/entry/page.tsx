@@ -1,4 +1,4 @@
-import { requireActiveUser } from "@/lib/auth/session";
+import { requireRoles } from "@/lib/auth/session";
 import { createClient } from "@/lib/supabase/server";
 import { getAvailableAssociationsWithPlatforms } from "@/lib/data/statistics-options";
 import { getMediaBuyerOptions, today, type MediaBuyerOption } from "@/lib/data/report-entries";
@@ -19,7 +19,7 @@ export default async function DailyEntryPage({
   searchParams: Promise<Record<string, string | undefined>>;
 }) {
   const params = await searchParams;
-  const profile = await requireActiveUser();
+  const profile = await requireRoles("admin", "media_buyer");
   const isAdmin = profile.role === "admin";
 
   const [associations, buyers] = await Promise.all([

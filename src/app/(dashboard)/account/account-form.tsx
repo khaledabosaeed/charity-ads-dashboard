@@ -3,6 +3,7 @@
 import { useActionState, useEffect, useRef } from "react";
 import { toast } from "sonner";
 import { useI18n } from "@/i18n";
+import { roleLabel } from "@/lib/auth/roles";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { FormError, FormItem, FormLabel } from "@/components/forms/field";
@@ -37,7 +38,7 @@ export function AccountForm({
       <div className="border border-line bg-paper-raised px-4 py-3 sm:px-5">
         <p className="text-[0.9375rem] font-semibold text-ink">{name}</p>
         <p className="annot mt-0.5">
-          {role === "admin" ? dict.nav.roleAdmin : dict.nav.roleMediaBuyer}
+          {roleLabel(role, dict)}
         </p>
       </div>
 

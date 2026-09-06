@@ -1,4 +1,5 @@
 import { requireActiveUser } from "@/lib/auth/session";
+import { canReadAll, canWrite } from "@/lib/auth/roles";
 import { getAvailableAssociationsWithPlatforms } from "@/lib/data/statistics-options";
 import {
   getAssociationReturnTotal,
@@ -26,7 +27,7 @@ export default async function DailyReportPage({
   const [entries, associations, mediaBuyers, salesReturn] = await Promise.all([
     getReportEntries(filters),
     getAvailableAssociationsWithPlatforms(),
-    profile.role === "admin" ? getMediaBuyerOptions() : Promise.resolve([]),
+    canReadAll(profile.role) ? getMediaBuyerOptions() : Promise.resolve([]),
     getAssociationReturnTotal(filters),
   ]);
 
@@ -37,10 +38,18 @@ export default async function DailyReportPage({
       <PageHeading
         titleKey="daily.reportTitle"
         extent={formatPeriod(filters.from ?? "…", filters.to ?? "…")}
-        action={<NewLinkButton href="/entry" labelKey="daily.entryTitle" />}
+        action={
+          canWrite(profile.role) ? (
+            <NewLinkButton href="/entry" labelKey="daily.entryTitle" />
+          ) : null
+        }
       />
       <ReportFilters associations={associations} mediaBuyers={mediaBuyers} filters={filters} />
-      <DailyReport entries={entries} associationReturn={associationReturn} />
+      <DailyReport
+        entries={entries}
+        associationReturn={associationReturn}
+        readOnly={!canWrite(profile.role)}
+      />
     </>
   );
 }

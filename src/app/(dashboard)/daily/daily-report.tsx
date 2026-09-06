@@ -17,9 +17,12 @@ import type { StatisticsEntryWithRelations } from "@/types/domain";
 export function DailyReport({
   entries,
   associationReturn,
+  readOnly = false,
 }: {
   entries: StatisticsEntryWithRelations[];
   associationReturn: number;
+  /** A viewer reads the day; the actions column is not drawn for them. */
+  readOnly?: boolean;
 }) {
   const { dict, locale } = useI18n();
 
@@ -66,9 +69,11 @@ export function DailyReport({
                 <TableHead numeric>{dict.statistics.advertisingReturn}</TableHead>
                 <TableHead numeric>{dict.statistics.roas}</TableHead>
                 <TableHead>{dict.daily.mediaBuyer}</TableHead>
-                <TableHead>
-                  <span className="sr-only">{dict.common.actions}</span>
-                </TableHead>
+                {readOnly ? null : (
+                  <TableHead>
+                    <span className="sr-only">{dict.common.actions}</span>
+                  </TableHead>
+                )}
               </TableRow>
             </TableHeader>
             <TableBody>
@@ -96,14 +101,16 @@ export function DailyReport({
                     <TableCell className="whitespace-nowrap text-ink-2">
                       {e.author?.full_name ?? "—"}
                     </TableCell>
-                    <TableCell>
-                      <div className="flex flex-wrap items-center gap-2">
-                        <Button asChild size="sm" variant="outline">
-                          <Link href={`/statistics/${e.id}/edit`}>{dict.common.edit}</Link>
-                        </Button>
-                        <DeleteStatisticsButton id={e.id} />
-                      </div>
-                    </TableCell>
+                    {readOnly ? null : (
+                      <TableCell>
+                        <div className="flex flex-wrap items-center gap-2">
+                          <Button asChild size="sm" variant="outline">
+                            <Link href={`/statistics/${e.id}/edit`}>{dict.common.edit}</Link>
+                          </Button>
+                          <DeleteStatisticsButton id={e.id} />
+                        </div>
+                      </TableCell>
+                    )}
                   </TableRow>
                 );
               })}

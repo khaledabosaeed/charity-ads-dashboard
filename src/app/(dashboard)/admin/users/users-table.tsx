@@ -4,6 +4,7 @@ import Link from "next/link";
 import { useTransition } from "react";
 import { toast } from "sonner";
 import { useI18n } from "@/i18n";
+import { roleLabel } from "@/lib/auth/roles";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
@@ -43,7 +44,7 @@ export function UsersTable({ users, currentUserId }: { users: UserRow[]; current
             <TableCell className="figure text-ink-2">{user.email || "—"}</TableCell>
             <TableCell>
               <Badge variant={user.role === "admin" ? "default" : "muted"}>
-                {user.role === "admin" ? dict.nav.roleAdmin : dict.nav.roleMediaBuyer}
+                {roleLabel(user.role, dict)}
               </Badge>
             </TableCell>
             <TableCell>

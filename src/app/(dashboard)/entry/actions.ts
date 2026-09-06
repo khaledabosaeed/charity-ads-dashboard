@@ -1,7 +1,7 @@
 "use server";
 
 import { revalidatePath } from "next/cache";
-import { requireActiveUser } from "@/lib/auth/session";
+import { requireRoles } from "@/lib/auth/session";
 import { createClient } from "@/lib/supabase/server";
 import { dailySheetSchema } from "@/lib/validations/daily-sheet";
 
@@ -50,7 +50,7 @@ export async function saveDailySheet(
   _prev: DailySheetState,
   formData: FormData
 ): Promise<DailySheetState> {
-  const profile = await requireActiveUser();
+  const profile = await requireRoles("admin", "media_buyer");
 
   const parsed = dailySheetSchema.safeParse({
     mediaBuyerId: formData.get("mediaBuyerId") || undefined,

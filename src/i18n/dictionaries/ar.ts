@@ -19,6 +19,7 @@ const ar: Dictionary = {
     expandRail: "توسيع القائمة",
     roleAdmin: "مشرف",
     roleMediaBuyer: "ميديا باير",
+    roleViewer: "مطّلع",
   },
   login: {
     title: "تسجيل الدخول",
@@ -187,6 +188,7 @@ const ar: Dictionary = {
     status: "الحالة",
     associationsAssigned: "الجمعيات المرتبطة",
     adminSeesEverything: "المشرف يرى كل الجمعيات، فلا يُربط بجمعيات بعينها.",
+    viewerSeesEverything: "المطّلع يرى كل الجمعيات للقراءة فقط، فلا يُربط بجمعيات بعينها.",
     selfRoleLocked: "لا يمكنك تغيير صلاحية حسابك أو تعطيله بنفسك.",
     you: "(أنت)",
     account: "حسابي",

@@ -1,6 +1,6 @@
 import { redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
-import type { Profile } from "@/types/domain";
+import type { Profile, UserRole } from "@/types/domain";
 
 /**
  * Loads the current auth user + their profile row. Returns null if there is
@@ -33,5 +33,16 @@ export async function requireActiveUser(): Promise<Profile> {
 export async function requireAdmin(): Promise<Profile> {
   const profile = await requireActiveUser();
   if (profile.role !== "admin") redirect("/forbidden");
+  return profile;
+}
+
+/**
+ * Redirects to /forbidden unless the current user holds one of `roles`. The
+ * sidebar already routes each role to its own sheets; this is the guard for
+ * anyone who types the address instead.
+ */
+export async function requireRoles(...roles: UserRole[]): Promise<Profile> {
+  const profile = await requireActiveUser();
+  if (!roles.includes(profile.role)) redirect("/forbidden");
   return profile;
 }

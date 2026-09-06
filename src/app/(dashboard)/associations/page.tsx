@@ -1,4 +1,4 @@
-import { requireActiveUser } from "@/lib/auth/session";
+import { requireRoles } from "@/lib/auth/session";
 import { getAvailableAssociationsWithPlatforms } from "@/lib/data/statistics-options";
 import {
   getMediaBuyerOptions,
@@ -18,7 +18,7 @@ export default async function AssociationPerformancePage({
   searchParams: Promise<Record<string, string | undefined>>;
 }) {
   const params = await searchParams;
-  const profile = await requireActiveUser();
+  const profile = await requireRoles("admin", "media_buyer");
   const filters = readReportFilters(params);
 
   const [entries, associations, mediaBuyers] = await Promise.all([

@@ -12,7 +12,17 @@ describe("createUserSchema", () => {
     expect(parsed.success).toBe(true);
   });
 
-  it("refuses a role that is not one of the two", () => {
+  it("accepts a read-only viewer account", () => {
+    const parsed = createUserSchema.safeParse({
+      fullName: "محمد جراد",
+      role: "viewer",
+      email: "viewer@example.com",
+      password: "correct-horse",
+    });
+    expect(parsed.success).toBe(true);
+  });
+
+  it("refuses a role that is not one of the three", () => {
     const parsed = createUserSchema.safeParse({
       fullName: "محمد جراد",
       role: "owner",

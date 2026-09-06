@@ -7,6 +7,7 @@ import { Topbar } from "@/components/layout/topbar";
 import { Lockup, Stamp } from "@/components/brand/lockup";
 import { RAIL_COOKIE_NAME, type RailState } from "@/components/layout/rail-config";
 import { useI18n } from "@/i18n";
+import { roleLabel } from "@/lib/auth/roles";
 import { cn } from "@/lib/utils";
 import type { Profile } from "@/types/domain";
 
@@ -64,7 +65,7 @@ function Rail({
                 {profile.full_name}
               </span>
               <span className="annot mt-0.5 block">
-                {profile.role === "admin" ? dict.nav.roleAdmin : dict.nav.roleMediaBuyer}
+                {roleLabel(profile.role, dict)}
               </span>
             </>
           )}

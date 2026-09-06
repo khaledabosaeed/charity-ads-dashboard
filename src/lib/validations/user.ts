@@ -1,7 +1,7 @@
 import { z } from "zod";
 
 const fullName = z.string().min(2, "الاسم الكامل مطلوب");
-const role = z.enum(["admin", "media_buyer"], { message: "الصلاحية مطلوبة" });
+const role = z.enum(["admin", "media_buyer", "viewer"], { message: "الصلاحية مطلوبة" });
 const password = z.string().min(8, "كلمة المرور يجب ألا تقل عن 8 أحرف");
 const email = z.email("بريد إلكتروني غير صحيح");
 const associationIds = z.array(z.string().uuid()).optional();

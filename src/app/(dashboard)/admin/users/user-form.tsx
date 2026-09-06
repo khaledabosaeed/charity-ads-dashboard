@@ -11,8 +11,8 @@ import type { ActionState } from "../associations/actions";
 import type { Association, Profile, UserRole } from "@/types/domain";
 
 /**
- * One form for both accounts an admin can open: a media buyer, who is assigned
- * associations, and another admin, who is assigned none. Credentials sit in
+ * One form for every account an admin can open: a media buyer, who is assigned
+ * associations, and an admin or viewer, who are assigned none. Credentials sit in
  * their own ruled group — on an existing account a blank field there means the
  * credential is left exactly as it was.
  */
@@ -68,6 +68,7 @@ export function UserForm({
           >
             <option value="media_buyer">{dict.nav.roleMediaBuyer}</option>
             <option value="admin">{dict.nav.roleAdmin}</option>
+            <option value="viewer">{dict.nav.roleViewer}</option>
           </NativeSelect>
           {/* A disabled select submits nothing, so the value still has to travel. */}
           {editingSelf ? <input type="hidden" name="role" value={role} /> : null}
@@ -159,7 +160,9 @@ export function UserForm({
           </div>
         </FormItem>
       ) : (
-        <p className="annot">{dict.users.adminSeesEverything}</p>
+        <p className="annot">
+          {role === "viewer" ? dict.users.viewerSeesEverything : dict.users.adminSeesEverything}
+        </p>
       )}
 
       <FormError message={state.error} />

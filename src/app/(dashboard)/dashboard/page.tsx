@@ -1,3 +1,5 @@
+import { requireRoles } from "@/lib/auth/session";
+import { canWrite } from "@/lib/auth/roles";
 import { createClient } from "@/lib/supabase/server";
 import { getAvailableAssociationsWithPlatforms } from "@/lib/data/statistics-options";
 import { getAssociationReturnTotal, resolveAssociationReturn } from "@/lib/data/report-entries";
@@ -21,6 +23,8 @@ export default async function DashboardPage({
 }: {
   searchParams: Promise<Record<string, string | undefined>>;
 }) {
+  const profile = await requireRoles("admin", "viewer");
+
   const params = await searchParams;
   const supabase = await createClient();
 
@@ -94,12 +98,22 @@ export default async function DashboardPage({
         titleKey="dashboard.title"
         extent={<ExtentLabel from={params.from} to={params.to} />}
         revision={drawnOn}
-        action={<NewLinkButton href="/statistics/new" labelKey="statistics.new" />}
+        action={
+          canWrite(profile.role) ? (
+            <NewLinkButton href="/statistics/new" labelKey="statistics.new" />
+          ) : null
+        }
       />
       <StatisticsFilters associations={associations} searchParams={params} />
 
       {entries.length === 0 && associationReturn === 0 ? (
-        <EmptyState action={<NewLinkButton href="/statistics/new" labelKey="statistics.new" />} />
+        <EmptyState
+          action={
+            canWrite(profile.role) ? (
+              <NewLinkButton href="/statistics/new" labelKey="statistics.new" />
+            ) : null
+          }
+        />
       ) : (
         <>
           <DashboardFigures
@@ -119,7 +133,7 @@ export default async function DashboardPage({
                 <RuledHeading>
                   <LatestEntriesLabel />
                 </RuledHeading>
-                <StatisticsTable entries={latest} />
+                <StatisticsTable entries={latest} readOnly={!canWrite(profile.role)} />
               </div>
             </>
           ) : null}

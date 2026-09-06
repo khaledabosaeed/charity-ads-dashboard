@@ -46,6 +46,23 @@ describe("Sidebar", () => {
     );
   });
 
+  it("gives a viewer the three reading sheets and no way to write", () => {
+    renderRail({ role: "viewer" });
+
+    expect(screen.getByRole("link", { name: ar.nav.dashboard })).toHaveAttribute(
+      "href",
+      "/dashboard"
+    );
+    expect(screen.getByRole("link", { name: ar.nav.dailyReport })).toHaveAttribute("href", "/daily");
+    expect(screen.getByRole("link", { name: ar.nav.statistics })).toHaveAttribute(
+      "href",
+      "/statistics"
+    );
+    expect(screen.queryByRole("link", { name: ar.nav.dailyEntry })).not.toBeInTheDocument();
+    expect(screen.queryByRole("link", { name: ar.nav.users })).not.toBeInTheDocument();
+    expect(screen.queryByRole("link", { name: ar.nav.auditLogs })).not.toBeInTheDocument();
+  });
+
   it("closed, keeps every destination reachable and named", () => {
     renderRail({ role: "media_buyer", collapsed: true });
 
