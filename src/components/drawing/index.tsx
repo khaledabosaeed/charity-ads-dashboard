@@ -110,7 +110,7 @@ export function DimensionCell({
   value: React.ReactNode;
   note?: React.ReactNode;
   trend?: React.ReactNode;
-  tone?: "ink" | "amber" | "datum" | "alarm";
+  tone?: "ink" | "amber" | "datum" | "alarm" | "cobalt";
   className?: string;
   style?: React.CSSProperties;
 }) {
@@ -119,12 +119,14 @@ export function DimensionCell({
     amber: "bg-amber-deep",
     datum: "bg-datum",
     alarm: "bg-alarm",
+    cobalt: "bg-cobalt",
   }[tone];
   const figureTone = {
     ink: "text-ink",
     amber: "text-amber-ink",
     datum: "text-datum",
     alarm: "text-alarm",
+    cobalt: "text-cobalt",
   }[tone];
 
   return (
