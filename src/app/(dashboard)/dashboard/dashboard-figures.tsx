@@ -24,12 +24,15 @@ export function DashboardFigures({
   previousEntries,
   associationReturn,
   previousAssociationReturn,
+  platformScoped = false,
 }: {
   entries: StatisticsEntryWithRelations[];
   previousEntries: StatisticsEntryWithRelations[];
   /** Day-level association return, already totalled for the current extent. */
   associationReturn: number;
   previousAssociationReturn: number;
+  /** Narrowed to one platform — see the overall ROAS below. */
+  platformScoped?: boolean;
 }) {
   const { dict, locale } = useI18n();
 
@@ -39,8 +42,14 @@ export function DashboardFigures({
   const totalReturn = sum(entries, (e) => e.advertising_return);
   const prevTotalReturn = sum(previousEntries, (e) => e.advertising_return);
 
-  const overallRoas = roas(associationReturn, totalSpent);
-  const prevRoas = roas(previousAssociationReturn, prevTotalSpent);
+  /* Association return is one day-level figure for every platform at once, so
+     it cannot be read against a single platform's spend. Narrowed to a
+     platform, the ROAS reads that platform's own advertising return. */
+  const overallRoas = roas(platformScoped ? totalReturn : associationReturn, totalSpent);
+  const prevRoas = roas(
+    platformScoped ? prevTotalReturn : previousAssociationReturn,
+    prevTotalSpent
+  );
 
   const resultCount = sum(entries, (e) => e.order_count);
   const prevResultCount = sum(previousEntries, (e) => e.order_count);

@@ -121,6 +121,7 @@ export default async function DashboardPage({
             previousEntries={previousEntries}
             associationReturn={associationReturn}
             previousAssociationReturn={previousAssociationReturn}
+            platformScoped={Boolean(params.platformId)}
           />
 
           {entries.length > 0 ? (
