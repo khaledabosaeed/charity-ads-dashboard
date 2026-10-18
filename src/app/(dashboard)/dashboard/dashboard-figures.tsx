@@ -31,7 +31,7 @@ export function DashboardFigures({
   /** Day-level association return, already totalled for the current extent. */
   associationReturn: number;
   previousAssociationReturn: number;
-  /** Narrowed to one platform — see the overall ROAS below. */
+  /** Narrowed to one platform — see the ROI below. */
   platformScoped?: boolean;
 }) {
   const { dict, locale } = useI18n();
@@ -42,14 +42,16 @@ export function DashboardFigures({
   const totalReturn = sum(entries, (e) => e.advertising_return);
   const prevTotalReturn = sum(previousEntries, (e) => e.advertising_return);
 
+  /* Platform ROAS reads what the platforms report; ROI reads what the
+     association actually took in. */
+  const platformRoas = roas(totalReturn, totalSpent);
+  const prevPlatformRoas = roas(prevTotalReturn, prevTotalSpent);
+
   /* Association return is one day-level figure for every platform at once, so
-     it cannot be read against a single platform's spend. Narrowed to a
-     platform, the ROAS reads that platform's own advertising return. */
-  const overallRoas = roas(platformScoped ? totalReturn : associationReturn, totalSpent);
-  const prevRoas = roas(
-    platformScoped ? prevTotalReturn : previousAssociationReturn,
-    prevTotalSpent
-  );
+     it cannot be read against a single platform's spend — narrowed to a
+     platform, there is no ROI to show. */
+  const roi = platformScoped ? null : roas(associationReturn, totalSpent);
+  const prevRoi = platformScoped ? null : roas(previousAssociationReturn, prevTotalSpent);
 
   const resultCount = sum(entries, (e) => e.order_count);
   const prevResultCount = sum(previousEntries, (e) => e.order_count);
@@ -65,7 +67,7 @@ export function DashboardFigures({
   const currencies = new Set(entries.map((e) => e.currency_code));
   const unit = currencies.size === 1 ? [...currencies][0] : null;
 
-  /* The same seven readings the per-platform cards show, just totalled across
+  /* The same readings the per-platform cards show, just totalled across
      whatever the filters leave in scope — "all platforms" reads as one card
      shaped exactly like the ones underneath it. A tile with nothing behind it
      yet is dropped rather than shown as a bare "—" or 0, and reappears on its
@@ -121,12 +123,20 @@ export function DashboardFigures({
       hasData: averageResultValue !== null,
     },
     {
-      label: dict.statistics.roas,
-      value: formatMetric(overallRoas, (n) => `${n.toFixed(2)}×`),
+      label: dict.dashboard.platformRoas,
+      value: formatMetric(platformRoas, (n) => `${n.toFixed(2)}×`),
       note: undefined,
-      tone: overallRoas !== null && overallRoas >= 1 ? ("datum" as const) : ("ink" as const),
-      trend: <TrendBadge current={overallRoas ?? 0} previous={prevRoas} />,
-      hasData: overallRoas !== null,
+      tone: platformRoas !== null && platformRoas >= 1 ? ("datum" as const) : ("ink" as const),
+      trend: <TrendBadge current={platformRoas ?? 0} previous={prevPlatformRoas} />,
+      hasData: platformRoas !== null,
+    },
+    {
+      label: dict.dashboard.roi,
+      value: formatMetric(roi, (n) => `${n.toFixed(2)}×`),
+      note: undefined,
+      tone: "cobalt" as const,
+      trend: <TrendBadge current={roi ?? 0} previous={prevRoi} />,
+      hasData: roi !== null,
     },
   ].filter((c) => c.hasData);
 

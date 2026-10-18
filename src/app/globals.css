@@ -44,6 +44,9 @@
   --alarm: #b3341f;
   --alarm-wash: #f8e2dd;
 
+  /* cobalt — the association's own return (ROI), never decoration */
+  --cobalt: #2563eb;
+
   /* the amber rail that owns the navigation region */
   --rail: #e59731;
   --rail-ink: #1a1207;
@@ -84,6 +87,8 @@
   --alarm: #e5705a;
   --alarm-wash: #2e1713;
 
+  --cobalt: #7fa8dc;
+
   --rail: #bd7a24;
   --rail-ink: #16100a;
   --rail-ink-2: #2a1c06;
@@ -114,6 +119,7 @@
   --color-datum-wash: var(--datum-wash);
   --color-alarm: var(--alarm);
   --color-alarm-wash: var(--alarm-wash);
+  --color-cobalt: var(--cobalt);
   --color-rail: var(--rail);
   --color-rail-ink: var(--rail-ink);
   --color-rail-ink-2: var(--rail-ink-2);

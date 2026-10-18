@@ -21,6 +21,7 @@ colors:
   datum-wash: "#dff0e5"
   alarm: "#b3341f"
   alarm-wash: "#f8e2dd"
+  cobalt: "#2563eb"
   rail: "#e59731"
   rail-ink: "#1a1207"
   rail-ink-2: "#4a3009"
@@ -188,6 +189,7 @@ A drafting palette: warm paper and near-black ink carrying two committed signal 
 ### Tertiary
 - **Correction Red** (`{colors.alarm}`): The red pencil of a drawing — corrections, overruns, deletions. When spend runs past its budget edge, the overrun is drawn in this colour with a dense hatch and a doubled vertical rule at the budget edge.
 - **Correction Wash** (`{colors.alarm-wash}`): Ground for a destructive tag or an inline error.
+- **Cobalt** (`{colors.cobalt}`): The association's own return — the dashboard's ROI cell, so it never reads as the platforms' ROAS beside it. No other role.
 
 ### Neutral
 - **Drafting Paper** (`{colors.paper}`): The page ground and the resting fill of every input field.
@@ -341,7 +343,7 @@ The system's centrepiece and the reason it exists. A quantity drawn as mass with
 - **On mount** (`animate`) the band draws itself in a drafter's order: the datum is ruled first with `.rule-in` (340ms), then the mass and any overrun are struck from it with `.strike` (560ms, starting at 140ms). Zero exists before any quantity does. When the band is live rather than mounting, the same geometry moves instead: width and `inset-inline-start` transition over 300ms, so a changing figure slides rather than redraws.
 
 ### Signature Component: The Dimension Cell
-Every metric is annotated the same way: a `.annot` label with a reserved `2.7em` min-height so labels of different lengths still align their rules, then a measured rule with a 1px tick serif at each end in the cell's tone (`ink`/`amber`/`datum`/`alarm`), then the figure at `1.5rem`–`1.75rem`, then an optional note. Cells are assembled into a `DimensionGrid` divided by 1px gaps over a `line` ground.
+Every metric is annotated the same way: a `.annot` label with a reserved `2.7em` min-height so labels of different lengths still align their rules, then a measured rule with a 1px tick serif at each end in the cell's tone (`ink`/`amber`/`datum`/`alarm`/`cobalt`), then the figure at `1.5rem`–`1.75rem`, then an optional note. Cells are assembled into a `DimensionGrid` divided by 1px gaps over a `line` ground.
 
 The dimension string is the third step of the sequence: the rule carries `.rule-in`, and `DimensionGrid` sets `--draw-delay: 340ms + i × 40ms` on each cell's wrapper, which inherits down to the rule inside it. The strings are therefore set out one after another with a capped stagger, the way a drafter works across a sheet. The labels and figures themselves are legible from 0ms — only the rules are drawn.
 

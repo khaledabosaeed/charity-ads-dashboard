@@ -83,6 +83,8 @@ const en: Dictionary = {
     orderCount: "Order Count",
     advertisingReturn: "Total Advertising Return",
     associationReturn: "Association Revenue",
+    platformRoas: "Platform ROAS",
+    roi: "ROI",
     avgRoas: "Advertising ROAS",
     chartTitle: "Spend & Return by Date",
     latestEntries: "Latest Entries",

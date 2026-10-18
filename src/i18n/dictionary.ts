@@ -81,6 +81,8 @@ export interface Dictionary {
     orderCount: string;
     advertisingReturn: string;
     associationReturn: string;
+    platformRoas: string;
+    roi: string;
     avgRoas: string;
     chartTitle: string;
     latestEntries: string;

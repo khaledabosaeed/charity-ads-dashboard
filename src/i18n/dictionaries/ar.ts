@@ -83,6 +83,8 @@ const ar: Dictionary = {
     orderCount: "عدد الطلبات",
     advertisingReturn: "إجمالي العائد الإعلاني",
     associationReturn: "إيرادات الجمعية",
+    platformRoas: "العائد من المنصات (ROAS)",
+    roi: "ROI",
     avgRoas: "العائد على الإنفاق الإعلاني (ROAS)",
     chartTitle: "المصروف والعائد حسب التاريخ",
     latestEntries: "أحدث السجلات",
