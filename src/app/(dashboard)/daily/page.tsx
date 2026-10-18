@@ -48,6 +48,7 @@ export default async function DailyReportPage({
       <DailyReport
         entries={entries}
         associationReturn={associationReturn}
+        platformScoped={Boolean(filters.platformId)}
         readOnly={!canWrite(profile.role)}
       />
     </>
