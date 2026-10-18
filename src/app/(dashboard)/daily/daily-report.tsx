@@ -16,24 +16,18 @@ import type { StatisticsEntryWithRelations } from "@/types/domain";
 /** The day's reading, then the day's lines. Newest day at the top. */
 export function DailyReport({
   entries,
-  associationReturn,
-  platformScoped = false,
   readOnly = false,
 }: {
   entries: StatisticsEntryWithRelations[];
-  associationReturn: number;
-  /** Narrowed to one platform — see the overall ROAS below. */
-  platformScoped?: boolean;
   /** A viewer reads the day; the actions column is not drawn for them. */
   readOnly?: boolean;
 }) {
   const { dict, locale } = useI18n();
 
   const totals = rollup(entries);
-  /* Association return is one day-level figure for every platform at once, so
-     it cannot be read against a single platform's spend. Narrowed to a
-     platform, the ROAS reads that platform's own advertising return. */
-  const overallRoas = roas(platformScoped ? totals.revenue : associationReturn, totals.spend);
+  /* The ROAS of exactly what the filters left in scope — the revenue card over
+     the spend card, so the three figures always agree with each other. */
+  const overallRoas = totals.roas;
   const unit = unifiedCurrency(entries);
   const rows = [...entries].reverse();
 

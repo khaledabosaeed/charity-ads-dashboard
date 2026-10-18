@@ -113,7 +113,7 @@ const en: Dictionary = {
     totalSpend: "Total spend",
     totalRevenue: "Total return",
     totalOrders: "Total orders",
-    overallRoas: "Overall ROAS",
+    overallRoas: "ROAS",
     activePlatforms: "Active platforms",
     noPlatforms: "No platforms are linked to this association",
     noAssociations: "No association has been assigned to you yet",

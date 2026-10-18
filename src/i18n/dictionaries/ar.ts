@@ -113,7 +113,7 @@ const ar: Dictionary = {
     totalSpend: "إجمالي الإنفاق",
     totalRevenue: "إجمالي الإيراد",
     totalOrders: "إجمالي الطلبات",
-    overallRoas: "ROAS الكلي",
+    overallRoas: "ROAS",
     activePlatforms: "منصات نشطة",
     noPlatforms: "لا توجد منصات مرتبطة بهذه الجمعية",
     noAssociations: "لم تُسنَد إليك أي جمعية بعد",

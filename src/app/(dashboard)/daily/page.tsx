@@ -2,11 +2,9 @@ import { requireActiveUser } from "@/lib/auth/session";
 import { canReadAll, canWrite } from "@/lib/auth/roles";
 import { getAvailableAssociationsWithPlatforms } from "@/lib/data/statistics-options";
 import {
-  getAssociationReturnTotal,
   getMediaBuyerOptions,
   getReportEntries,
   readReportFilters,
-  resolveAssociationReturn,
 } from "@/lib/data/report-entries";
 import { formatPeriod } from "@/lib/format";
 import { PageHeading } from "@/components/layout/page-heading";
@@ -24,14 +22,11 @@ export default async function DailyReportPage({
   const profile = await requireActiveUser();
   const filters = readReportFilters(params, { defaultToToday: true });
 
-  const [entries, associations, mediaBuyers, salesReturn] = await Promise.all([
+  const [entries, associations, mediaBuyers] = await Promise.all([
     getReportEntries(filters),
     getAvailableAssociationsWithPlatforms(),
     canReadAll(profile.role) ? getMediaBuyerOptions() : Promise.resolve([]),
-    getAssociationReturnTotal(filters),
   ]);
-
-  const associationReturn = resolveAssociationReturn(salesReturn, entries);
 
   return (
     <>
@@ -47,8 +42,6 @@ export default async function DailyReportPage({
       <ReportFilters associations={associations} mediaBuyers={mediaBuyers} filters={filters} />
       <DailyReport
         entries={entries}
-        associationReturn={associationReturn}
-        platformScoped={Boolean(filters.platformId)}
         readOnly={!canWrite(profile.role)}
       />
     </>
